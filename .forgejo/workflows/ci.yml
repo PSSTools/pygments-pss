@@ -97,8 +97,21 @@ jobs:
       # Dev-only: scripts/gen_keywords.py and tests/test_vocabulary_sync.py read
       # packages/pssparser/src/PSSLexer.g4. The shipped wheel never needs it --
       # _keywords.py is generated and checked in.
+      #
+      # `-d default-dev` is not optional and not redundant with
+      # `default-dep-set` in ivpm.yaml. The grammar is a development
+      # dependency, so it is absent from the `default` set; a fresh checkout
+      # that resolves `default` gets no pssparser and fails the drift guard for
+      # a reason unrelated to the vocabulary. Stating it here as well means the
+      # workflow does not silently depend on a key in another file.
       run: |
-        python3 -m ivpm update -j 1 -a
+        python3 -m ivpm update -j 1 -a -d default-dev
+        if [ ! -f packages/pssparser/src/PSSLexer.g4 ]; then
+          echo "::error::ivpm update did not produce packages/pssparser/src/PSSLexer.g4."
+          echo "Resolved packages:"
+          ls -1 packages/ || true
+          exit 1
+        fi
         ls -l packages/pssparser/src/PSSLexer.g4
 
     - name: Check the generated vocabulary is in sync

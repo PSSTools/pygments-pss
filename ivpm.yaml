@@ -1,6 +1,18 @@
 package:
   name: pygments-pss
 
+  # A bare `ivpm update` must resolve the *development* set. The grammar that
+  # scripts/gen_keywords.py and tests/test_vocabulary_sync.py read lives only in
+  # `default-dev`, because it is a development dependency and has no business in
+  # a runtime set (DESIGN.md section 4.4).
+  #
+  # Without this, a fresh checkout -- CI, or a new contributor -- gets the
+  # `default` set, no pssparser, and a drift guard that fails for a reason that
+  # has nothing to do with the vocabulary. A working copy hides it: once
+  # `ivpm update -d default-dev` has run, `packages/ivpm.json` remembers the
+  # choice and every later bare `ivpm update` keeps using it.
+  default-dep-set: default-dev
+
   dep-sets:
   - name: default
     deps:
