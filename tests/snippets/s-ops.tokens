@@ -1,0 +1,191 @@
+'a'                      Token.Name
+' '                      Token.Text
+'+'                      Token.Operator
+' '                      Token.Text
+'b'                      Token.Name
+' '                      Token.Text
+'-'                      Token.Operator
+' '                      Token.Text
+'c'                      Token.Name
+' '                      Token.Text
+'*'                      Token.Operator
+' '                      Token.Text
+'d'                      Token.Name
+' '                      Token.Text
+'/'                      Token.Operator
+' '                      Token.Text
+'e'                      Token.Name
+' '                      Token.Text
+'%'                      Token.Operator
+' '                      Token.Text
+'f'                      Token.Name
+' '                      Token.Text
+'**'                     Token.Operator
+' '                      Token.Text
+'g'                      Token.Name
+'\n'                     Token.Text
+'a'                      Token.Name
+' '                      Token.Text
+'=='                     Token.Operator
+' '                      Token.Text
+'b'                      Token.Name
+' '                      Token.Text
+'!='                     Token.Operator
+' '                      Token.Text
+'c'                      Token.Name
+' '                      Token.Text
+'<='                     Token.Operator
+' '                      Token.Text
+'d'                      Token.Name
+' '                      Token.Text
+'>='                     Token.Operator
+' '                      Token.Text
+'e'                      Token.Name
+' '                      Token.Text
+'<'                      Token.Operator
+' '                      Token.Text
+'f'                      Token.Name
+' '                      Token.Text
+'>'                      Token.Operator
+' '                      Token.Text
+'g'                      Token.Name
+'\n'                     Token.Text
+'a'                      Token.Name
+' '                      Token.Text
+'&&'                     Token.Operator
+' '                      Token.Text
+'b'                      Token.Name
+' '                      Token.Text
+'||'                     Token.Operator
+' '                      Token.Text
+'c'                      Token.Name
+' '                      Token.Text
+'&'                      Token.Operator
+' '                      Token.Text
+'d'                      Token.Name
+' '                      Token.Text
+'|'                      Token.Operator
+' '                      Token.Text
+'e'                      Token.Name
+' '                      Token.Text
+'^'                      Token.Operator
+' '                      Token.Text
+'~'                      Token.Operator
+'f'                      Token.Name
+' '                      Token.Text
+'!'                      Token.Operator
+'g'                      Token.Name
+'\n'                     Token.Text
+'a'                      Token.Name
+' '                      Token.Text
+'='                      Token.Operator
+' '                      Token.Text
+'b'                      Token.Name
+' '                      Token.Text
+'+='                     Token.Operator
+' '                      Token.Text
+'c'                      Token.Name
+' '                      Token.Text
+'-='                     Token.Operator
+' '                      Token.Text
+'d'                      Token.Name
+' '                      Token.Text
+'<<='                    Token.Operator
+' '                      Token.Text
+'e'                      Token.Name
+' '                      Token.Text
+'>>='                    Token.Operator
+' '                      Token.Text
+'f'                      Token.Name
+' '                      Token.Text
+'|='                     Token.Operator
+' '                      Token.Text
+'g'                      Token.Name
+' '                      Token.Text
+'&='                     Token.Operator
+' '                      Token.Text
+'h'                      Token.Name
+'\n'                     Token.Text
+'a'                      Token.Name
+' '                      Token.Text
+'->'                     Token.Operator
+' '                      Token.Text
+'b'                      Token.Name
+';'                      Token.Punctuation
+' '                      Token.Text
+'a'                      Token.Name
+' '                      Token.Text
+':='                     Token.Operator
+' '                      Token.Text
+'b'                      Token.Name
+';'                      Token.Punctuation
+' '                      Token.Text
+'a'                      Token.Name
+' '                      Token.Text
+':/'                     Token.Operator
+' '                      Token.Text
+'b'                      Token.Name
+';'                      Token.Punctuation
+' '                      Token.Text
+'a'                      Token.Name
+'..'                     Token.Operator
+'b'                      Token.Name
+';'                      Token.Punctuation
+' '                      Token.Text
+'a'                      Token.Name
+'...'                    Token.Operator
+'b'                      Token.Name
+';'                      Token.Punctuation
+' '                      Token.Text
+'a'                      Token.Name.Namespace
+'::'                     Token.Operator
+'b'                      Token.Name
+'\n'                     Token.Text
+'x'                      Token.Name
+' '                      Token.Text
+'='                      Token.Operator
+' '                      Token.Text
+'y'                      Token.Name
+' '                      Token.Text
+'?'                      Token.Operator
+' '                      Token.Text
+'1'                      Token.Literal.Number.Integer
+' '                      Token.Text
+':'                      Token.Operator
+' '                      Token.Text
+'-'                      Token.Operator
+'2'                      Token.Literal.Number.Integer
+'\n'                     Token.Text
+'d'                      Token.Name
+' '                      Token.Text
+'dist'                   Token.Keyword
+' '                      Token.Text
+'{'                      Token.Punctuation
+' '                      Token.Text
+'0'                      Token.Literal.Number.Integer
+' '                      Token.Text
+':='                     Token.Operator
+' '                      Token.Text
+'1'                      Token.Literal.Number.Integer
+','                      Token.Punctuation
+' '                      Token.Text
+'['                      Token.Punctuation
+'1'                      Token.Literal.Number.Integer
+'..'                     Token.Operator
+'3'                      Token.Literal.Number.Integer
+']'                      Token.Punctuation
+' '                      Token.Text
+':/'                     Token.Operator
+' '                      Token.Text
+'6'                      Token.Literal.Number.Integer
+' '                      Token.Text
+'}'                      Token.Punctuation
+'\n'                     Token.Text
+'t'                      Token.Name
+'...'                    Token.Operator
+' '                      Token.Text
+'args'                   Token.Name
+'\n'                     Token.Text
+'#'                      Token.Operator
+'1'                      Token.Literal.Number.Integer
+'\n'                     Token.Text

@@ -1,0 +1,166 @@
+# CI for psstools/pygments-pss on Forgejo Actions.
+#
+# Same two constraints as pssparser and sphinx-pss:
+#
+#  1. No third-party actions. A bare `uses:` resolves against code.forgejo.org
+#     (Forgejo's DEFAULT_ACTIONS_URL), not github.com -- so `actions/checkout`
+#     and the `forgejo/*` actions are available and `actions/setup-python` is
+#     not. The interpreter matrix therefore comes from the pssparser CI
+#     container's /opt/python tree rather than from a setup action. That is the
+#     only reason this pure-Python package runs in a manylinux container.
+#  2. Dependencies resolve from git.dvkit.org, not github.com.
+#
+# The whole matrix runs in one job as a shell loop rather than as a job matrix:
+# each leg is a few seconds of pure-Python testing, while `ivpm update` fetches
+# ~17 MB (pssparser and its ANTLR/gtest deps, needed only for src/PSSLexer.g4).
+# Paying that once beats paying it twelve times.
+
+name: CI
+
+on:
+  - push
+  - pull_request
+  - workflow_dispatch
+
+env:
+  PY: /opt/python/cp312-cp312/bin/python
+  # Pygments floor from pyproject.toml. The floor leg is what catches
+  # accidental use of a newer Pygments API (DESIGN.md section 8.5).
+  PYGMENTS_FLOOR: "2.14.0"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    container:
+      image: dvkit/pssparser-ci:manylinux_2_28-x86_64
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Check for internal identifiers in tracked files
+      # This repo is published, so anything committed here is public. Internal
+      # host names, tailnet addresses and CGNAT-range IPs must not appear in
+      # tracked files; if a build ever needs one, it belongs in a repository
+      # secret, which is masked in logs.
+      run: |
+        pattern='\.ts\.net|100\.(6[4-9]|[7-9][0-9]|1[01][0-9]|12[0-7])\.[0-9]+\.[0-9]+'
+        if git grep -nIE "$pattern" -- . ':!.forgejo/workflows/ci.yml' ; then
+          echo "::error::internal identifier found in a tracked file (see matches above)"
+          exit 1
+        fi
+        echo "OK: no internal identifiers in tracked files"
+
+    - name: Configure ivpm dependency resolution
+      # ivpm.yaml names git.dvkit.org already, but pssparser's own dependencies
+      # name github.com. Remap them so the build does not depend on GitHub.
+      run: |
+        mkdir -p ~/.config/ivpm
+        cat > ~/.config/ivpm/config.yaml <<'EOF'
+        git-url-map:
+          - from: "https://github.com/mballance-utils/"
+            to:   "https://git.dvkit.org/mballance-utils/"
+          - from: "https://github.com/psstools/"
+            to:   "https://git.dvkit.org/psstools/"
+          - from: "https://github.com/fvutils/"
+            to:   "https://git.dvkit.org/fvutils/"
+        git-auth:
+          - host: "git.dvkit.org"
+            order: ["https"]
+        EOF
+
+    - name: Fetch the PSS grammar
+      # Dev-only: scripts/gen_keywords.py and tests/test_vocabulary_sync.py read
+      # packages/pssparser/src/PSSLexer.g4. The shipped wheel never needs it --
+      # _keywords.py is generated and checked in.
+      run: |
+        export IVPM_PYTHON=${PY}
+        ${IVPM_PYTHON} -m ivpm update -j 1 -a
+        test -f packages/pssparser/src/PSSLexer.g4
+
+    - name: Test across the interpreter and Pygments matrix
+      # Python 3.9-3.14 x Pygments {floor, latest} (DESIGN.md section 8.5).
+      run: |
+        set -e
+        fail=0
+        for py in cp39-cp39 cp310-cp310 cp311-cp311 cp312-cp312 cp313-cp313 cp314-cp314; do
+          for pyg in "==${PYGMENTS_FLOOR}" ""; do
+            label="${py} pygments${pyg:-@latest}"
+            echo "::group::${label}"
+            venv=/tmp/venv-${py}-${pyg//[!0-9]/}
+            /opt/python/${py}/bin/python -m venv ${venv}
+            ${venv}/bin/python -m pip install -q --upgrade pip
+            ${venv}/bin/python -m pip install -q ".[test]" "Pygments${pyg}"
+            if ${venv}/bin/python -m pytest -q --tb=short; then
+              echo "PASS ${label}"
+            else
+              echo "::error::FAIL ${label}"
+              fail=1
+            fi
+            echo "::endgroup::"
+          done
+        done
+        exit ${fail}
+
+    - name: Check the generated vocabulary is in sync
+      # Redundant with tests/test_vocabulary_sync.py, but reports as itself:
+      # a pssparser keyword addition should read as "regenerate _keywords.py",
+      # not as an opaque assertion failure buried in the matrix output.
+      run: |
+        . packages/python/bin/activate
+        python scripts/gen_keywords.py --check
+
+  publish-pypi:
+    # Releases only. A tag is the deliberate act; ordinary pushes to main
+    # produce dev-suffixed builds that must never reach PyPI, because a version
+    # number there can be yanked but never reused. (This replaces the plan's
+    # original push-to-main gate -- see implementation-plan section 8, P-D6.)
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [test]
+    runs-on: ubuntu-latest
+    container:
+      image: dvkit/pssparser-ci:manylinux_2_28-x86_64
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Check the tag matches the package version
+      run: |
+        tag="${GITHUB_REF#refs/tags/v}"
+        base=$(grep '^BASE = ' src/pygments_pss/__version__.py | sed 's/.*"\(.*\)".*/\1/')
+        echo "tag=$tag  BASE=$base"
+        if [ "$tag" != "$base" ]; then
+          echo "::error::tag v$tag does not match BASE $base in src/pygments_pss/__version__.py"
+          exit 1
+        fi
+
+    - name: Build the wheel and sdist
+      # Pure Python: one universal wheel plus an sdist, no per-interpreter
+      # matrix and no auditwheel repair (DESIGN.md section 4.4).
+      run: |
+        ${PY} -m pip install -q build twine
+        ${PY} -m build
+        ls -l dist/
+
+    - name: Install the built wheel into a clean venv and smoke-test it
+      # The entry point is packaging metadata; only an install from the built
+      # artifact proves it survived the build.
+      run: |
+        /opt/python/cp312-cp312/bin/python -m venv /tmp/relcheck
+        /tmp/relcheck/bin/python -m pip install -q dist/*.whl
+        echo 'component pss_top { action entry {} }' > /tmp/smoke.pss
+        /tmp/relcheck/bin/python -m pygments -l pss /tmp/smoke.pss
+        /tmp/relcheck/bin/python -c "from pygments.lexers import get_lexer_by_name; print(get_lexer_by_name('pss'))"
+
+    - name: Publish to PyPI
+      # Plain twine rather than a third-party action: this is the release path,
+      # and it should not depend on GitHub being reachable.
+      env:
+        TWINE_USERNAME: __token__
+        TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
+      run: |
+        if [ -z "$TWINE_PASSWORD" ]; then
+          echo "::error::PYPI_API_TOKEN is not set for this repository"
+          exit 1
+        fi
+        ${PY} -m twine check dist/*
+        ${PY} -m twine upload --non-interactive --skip-existing dist/*

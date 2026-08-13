@@ -1,0 +1,6 @@
+// plain single
+/// doc single
+//! doc single, bang form
+/* plain block */
+/** doc block */
+/*! doc block, bang form */

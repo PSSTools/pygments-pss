@@ -1,0 +1,18 @@
+'// plain single'        Token.Comment.Single
+'\n'                     Token.Text
+'/// doc single'         Token.Comment.Special
+'\n'                     Token.Text
+'//! doc single, bang form' Token.Comment.Special
+'\n'                     Token.Text
+'/*'                     Token.Comment.Multiline
+' plain block '          Token.Comment.Multiline
+'*/'                     Token.Comment.Multiline
+'\n'                     Token.Text
+'/**'                    Token.Comment.Special
+' doc block '            Token.Comment.Special
+'*/'                     Token.Comment.Special
+'\n'                     Token.Text
+'/*!'                    Token.Comment.Special
+' doc block, bang form ' Token.Comment.Special
+'*/'                     Token.Comment.Special
+'\n'                     Token.Text

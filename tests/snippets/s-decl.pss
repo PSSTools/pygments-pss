@@ -1,0 +1,14 @@
+package p;
+component c {}
+struct s {}
+buffer b {}
+action a {}
+monitor m {}
+covergroup cg {}
+class k {}
+annotation an {}
+extend action a {}
+typedef bit[3:0] nibble_t;
+function int add(int x);
+exec body {}
+activity {}

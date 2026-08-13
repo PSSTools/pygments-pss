@@ -1,0 +1,128 @@
+'exec'                   Token.Keyword
+' '                      Token.Text
+'pre_solve'              Token.Keyword
+' '                      Token.Text
+'{'                      Token.Punctuation
+'}'                      Token.Punctuation
+'\n'                     Token.Text
+'exec'                   Token.Keyword
+' '                      Token.Text
+'post_solve'             Token.Keyword
+' '                      Token.Text
+'{'                      Token.Punctuation
+'}'                      Token.Punctuation
+'\n'                     Token.Text
+'exec'                   Token.Keyword
+' '                      Token.Text
+'pre_body'               Token.Keyword
+' '                      Token.Text
+'{'                      Token.Punctuation
+'}'                      Token.Punctuation
+'\n'                     Token.Text
+'exec'                   Token.Keyword
+' '                      Token.Text
+'body'                   Token.Keyword
+' '                      Token.Text
+'{'                      Token.Punctuation
+'}'                      Token.Punctuation
+'\n'                     Token.Text
+'exec'                   Token.Keyword
+' '                      Token.Text
+'header'                 Token.Keyword
+' '                      Token.Text
+'{'                      Token.Punctuation
+'}'                      Token.Punctuation
+'\n'                     Token.Text
+'exec'                   Token.Keyword
+' '                      Token.Text
+'declaration'            Token.Keyword
+' '                      Token.Text
+'{'                      Token.Punctuation
+'}'                      Token.Punctuation
+'\n'                     Token.Text
+'exec'                   Token.Keyword
+' '                      Token.Text
+'run_start'              Token.Keyword
+' '                      Token.Text
+'{'                      Token.Punctuation
+'}'                      Token.Punctuation
+'\n'                     Token.Text
+'exec'                   Token.Keyword
+' '                      Token.Text
+'run_end'                Token.Keyword
+' '                      Token.Text
+'{'                      Token.Punctuation
+'}'                      Token.Punctuation
+'\n'                     Token.Text
+'exec'                   Token.Keyword
+' '                      Token.Text
+'init_down'              Token.Keyword
+' '                      Token.Text
+'{'                      Token.Punctuation
+'}'                      Token.Punctuation
+'\n'                     Token.Text
+'exec'                   Token.Keyword
+' '                      Token.Text
+'init_up'                Token.Keyword
+' '                      Token.Text
+'{'                      Token.Punctuation
+'}'                      Token.Punctuation
+'\n'                     Token.Text
+'exec'                   Token.Keyword
+' '                      Token.Text
+'body'                   Token.Keyword
+' '                      Token.Text
+'C'                      Token.Name
+' '                      Token.Text
+'='                      Token.Operator
+' '                      Token.Text
+'"""'                    Token.Literal.String.Heredoc
+'printf('                Token.Literal.String.Heredoc
+'"'                      Token.Literal.String.Heredoc
+'hi'                     Token.Literal.String.Heredoc
+'"'                      Token.Literal.String.Heredoc
+');'                     Token.Literal.String.Heredoc
+'"""'                    Token.Literal.String.Heredoc
+';'                      Token.Punctuation
+'\n'                     Token.Text
+'exec'                   Token.Keyword
+' '                      Token.Text
+'body'                   Token.Keyword
+' '                      Token.Text
+'CPP'                    Token.Name
+' '                      Token.Text
+'='                      Token.Operator
+' '                      Token.Text
+'"""'                    Token.Literal.String.Heredoc
+'cout << 1;'             Token.Literal.String.Heredoc
+'"""'                    Token.Literal.String.Heredoc
+';'                      Token.Punctuation
+'\n'                     Token.Text
+'exec'                   Token.Keyword
+' '                      Token.Text
+'header'                 Token.Keyword
+' '                      Token.Text
+'SV'                     Token.Name
+' '                      Token.Text
+'='                      Token.Operator
+' '                      Token.Text
+'"""'                    Token.Literal.String.Heredoc
+'import uvm_pkg::*;'     Token.Literal.String.Heredoc
+'"""'                    Token.Literal.String.Heredoc
+';'                      Token.Punctuation
+'\n'                     Token.Text
+'exec'                   Token.Keyword
+' '                      Token.Text
+'file'                   Token.Keyword
+' '                      Token.Text
+'"'                      Token.Literal.String.Double
+'out.txt'                Token.Literal.String.Double
+'"'                      Token.Literal.String.Double
+' '                      Token.Text
+'='                      Token.Operator
+' '                      Token.Text
+'"""'                    Token.Literal.String.Heredoc
+'content'                Token.Literal.String.Heredoc
+'"""'                    Token.Literal.String.Heredoc
+';'                      Token.Punctuation
+'\n'                     Token.Text

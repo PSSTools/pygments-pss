@@ -1,0 +1,10 @@
+'\\busa+index'           Token.Name
+' '                      Token.Text
+'\\-clock'               Token.Name
+' '                      Token.Text
+'\\***error-condition***' Token.Name
+' '                      Token.Text
+'\\net1/\\net2'          Token.Name
+' '                      Token.Text
+'\\{a,b}'                Token.Name
+'\n'                     Token.Text

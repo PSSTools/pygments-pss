@@ -1,0 +1,53 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pygments-pss"
+description = "Pygments lexer for the Accellera Portable Test and Stimulus Standard (PSS)"
+readme = "README.md"
+requires-python = ">=3.9"
+license = "Apache-2.0"
+authors = [
+    { name = "Matthew Ballance", email = "matt.ballance@gmail.com" },
+]
+keywords = ["pygments", "lexer", "pss", "accellera", "verification", "eda"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Topic :: Text Processing :: Filters",
+    "Topic :: Software Development :: Documentation",
+]
+dependencies = ["Pygments>=2.14"]
+dynamic = ["version"]
+
+[project.optional-dependencies]
+test = ["pytest>=8.0"]
+docs = ["myst-parser", "furo", "sphinx>=7.0"]
+
+[project.urls]
+Homepage = "https://accellera.org/downloads/standards/portable-stimulus"
+Source = "https://git.dvkit.org/psstools/pygments-pss"
+
+# The entry-point *name* is cosmetic for lexers: Pygments loads the class and
+# reads its own aliases/filenames/mimetypes (DESIGN.md section 4.2).
+[project.entry-points."pygments.lexers"]
+pss = "pygments_pss.lexer:PSSLexer"
+
+[tool.setuptools.dynamic]
+version = { attr = "pygments_pss.__version__._pkg_version" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+pygments_pss = ["py.typed"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = [
+    "unit: pure token-stream assertions",
+    "corpus: sweeps over tests/corpus/; fast, and the primary signal -- not opt-in",
+    "upstream: asserts a pssparser grammar fact this package depends on; a failure, never a skip",
+]

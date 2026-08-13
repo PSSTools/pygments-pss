@@ -1,0 +1,54 @@
+'package'                Token.Keyword.Declaration
+' '                      Token.Text
+'my_pkg'                 Token.Name.Namespace
+'::'                     Token.Operator
+'sub'                    Token.Name.Namespace
+';'                      Token.Punctuation
+'\n'                     Token.Text
+'import'                 Token.Keyword.Declaration
+' '                      Token.Text
+'addr_reg_pkg'           Token.Name.Namespace
+'::'                     Token.Operator
+'*'                      Token.Operator
+';'                      Token.Punctuation
+'\n'                     Token.Text
+'import'                 Token.Keyword.Declaration
+' '                      Token.Text
+'std_pkg'                Token.Name.Namespace
+';'                      Token.Punctuation
+'\n'                     Token.Text
+'import'                 Token.Keyword.Declaration
+' '                      Token.Text
+'solve'                  Token.Keyword.Declaration
+' '                      Token.Text
+'function'               Token.Keyword
+' '                      Token.Text
+'ext_pkg'                Token.Name.Namespace
+'::'                     Token.Operator
+'alloc_addr'             Token.Name
+';'                      Token.Punctuation
+'\n'                     Token.Text
+'component'              Token.Keyword.Declaration
+' '                      Token.Text
+'pss_top'                Token.Name.Class
+' '                      Token.Text
+':'                      Token.Operator
+' '                      Token.Text
+'base_c'                 Token.Name.Class
+' '                      Token.Text
+'{'                      Token.Punctuation
+'}'                      Token.Punctuation
+'\n'                     Token.Text
+'action'                 Token.Keyword.Declaration
+' '                      Token.Text
+'a'                      Token.Name.Class
+' '                      Token.Text
+':'                      Token.Operator
+' '                      Token.Text
+'other_pkg'              Token.Name.Namespace
+'::'                     Token.Operator
+'base_a'                 Token.Name.Class
+' '                      Token.Text
+'{'                      Token.Punctuation
+'}'                      Token.Punctuation
+'\n'                     Token.Text

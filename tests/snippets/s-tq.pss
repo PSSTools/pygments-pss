@@ -1,0 +1,7 @@
+exec body C = """
+    /* {{ name }} */
+    {% foreach (i : count) %}
+    write32({{ base + i*4 }});
+    {%%}
+    a "quoted" word
+""";

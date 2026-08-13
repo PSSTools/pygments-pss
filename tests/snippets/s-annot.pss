@@ -1,0 +1,5 @@
+annotation desc_c { string text; }
+@desc_c {.text = "elem", .n = 4}
+action a {}
+@desc_c {.text = "standalone"};
+@bare

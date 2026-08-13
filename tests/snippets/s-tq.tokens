@@ -1,0 +1,51 @@
+'exec'                   Token.Keyword
+' '                      Token.Text
+'body'                   Token.Keyword
+' '                      Token.Text
+'C'                      Token.Name
+' '                      Token.Text
+'='                      Token.Operator
+' '                      Token.Text
+'"""'                    Token.Literal.String.Heredoc
+'\n    /* '              Token.Literal.String.Heredoc
+'{{'                     Token.Literal.String.Interpol
+' '                      Token.Text
+'name'                   Token.Name
+' '                      Token.Text
+'}}'                     Token.Literal.String.Interpol
+' */\n    '              Token.Literal.String.Heredoc
+'{%'                     Token.Comment.Preproc
+' '                      Token.Text
+'foreach'                Token.Keyword
+' '                      Token.Text
+'('                      Token.Punctuation
+'i'                      Token.Name
+' '                      Token.Text
+':'                      Token.Operator
+' '                      Token.Text
+'count'                  Token.Name
+')'                      Token.Punctuation
+' '                      Token.Text
+'%}'                     Token.Comment.Preproc
+'\n    write32('         Token.Literal.String.Heredoc
+'{{'                     Token.Literal.String.Interpol
+' '                      Token.Text
+'base'                   Token.Name
+' '                      Token.Text
+'+'                      Token.Operator
+' '                      Token.Text
+'i'                      Token.Name
+'*'                      Token.Operator
+'4'                      Token.Literal.Number.Integer
+' '                      Token.Text
+'}}'                     Token.Literal.String.Interpol
+');\n    '               Token.Literal.String.Heredoc
+'{%%}'                   Token.Comment.Preproc
+'\n    a '               Token.Literal.String.Heredoc
+'"'                      Token.Literal.String.Heredoc
+'quoted'                 Token.Literal.String.Heredoc
+'"'                      Token.Literal.String.Heredoc
+' word\n'                Token.Literal.String.Heredoc
+'"""'                    Token.Literal.String.Heredoc
+';'                      Token.Punctuation
+'\n'                     Token.Text

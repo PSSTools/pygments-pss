@@ -1,0 +1,60 @@
+'annotation'             Token.Keyword.Declaration
+' '                      Token.Text
+'desc_c'                 Token.Name.Class
+' '                      Token.Text
+'{'                      Token.Punctuation
+' '                      Token.Text
+'string'                 Token.Keyword.Type
+' '                      Token.Text
+'text'                   Token.Name
+';'                      Token.Punctuation
+' '                      Token.Text
+'}'                      Token.Punctuation
+'\n'                     Token.Text
+'@'                      Token.Name.Decorator
+'desc_c'                 Token.Name.Decorator
+' '                      Token.Text
+'{'                      Token.Punctuation
+'.'                      Token.Punctuation
+'text'                   Token.Name.Attribute
+' '                      Token.Text
+'='                      Token.Operator
+' '                      Token.Text
+'"'                      Token.Literal.String.Double
+'elem'                   Token.Literal.String.Double
+'"'                      Token.Literal.String.Double
+','                      Token.Punctuation
+' '                      Token.Text
+'.'                      Token.Punctuation
+'n'                      Token.Name.Attribute
+' '                      Token.Text
+'='                      Token.Operator
+' '                      Token.Text
+'4'                      Token.Literal.Number.Integer
+'}'                      Token.Punctuation
+'\n'                     Token.Text
+'action'                 Token.Keyword.Declaration
+' '                      Token.Text
+'a'                      Token.Name.Class
+' '                      Token.Text
+'{'                      Token.Punctuation
+'}'                      Token.Punctuation
+'\n'                     Token.Text
+'@'                      Token.Name.Decorator
+'desc_c'                 Token.Name.Decorator
+' '                      Token.Text
+'{'                      Token.Punctuation
+'.'                      Token.Punctuation
+'text'                   Token.Name.Attribute
+' '                      Token.Text
+'='                      Token.Operator
+' '                      Token.Text
+'"'                      Token.Literal.String.Double
+'standalone'             Token.Literal.String.Double
+'"'                      Token.Literal.String.Double
+'}'                      Token.Punctuation
+';'                      Token.Punctuation
+'\n'                     Token.Text
+'@'                      Token.Name.Decorator
+'bare'                   Token.Name.Decorator
+'\n'                     Token.Text

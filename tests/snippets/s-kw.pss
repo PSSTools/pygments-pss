@@ -1,0 +1,155 @@
+// T4.3 -- one line per keyword, grouped by the DESIGN.md section 6.2 bucket
+// it belongs to. One keyword per line so the "declaration keyword then name"
+// rule cannot chain one keyword onto the next and disguise the bucket.
+//
+// This golden is the taxonomy: any reclassification shows up here as a
+// reviewable diff before it shows up in a reader's browser.
+
+// -- Type-declaring -> Keyword.Declaration
+action
+annotation
+buffer
+class
+component
+covergroup
+enum
+monitor
+package
+resource
+state
+stream
+struct
+typedef
+
+// -- Built-in types -> Keyword.Type
+array
+bit
+bool
+chandle
+float32
+float64
+int
+list
+map
+set
+string
+void
+
+// -- Modifiers and qualifiers -> Keyword.Declaration
+abstract
+atomic
+const
+dynamic
+export
+extend
+import
+instance
+mutable
+override
+private
+protected
+public
+pure
+rand
+ref
+solve
+static
+symbol
+target
+type
+
+// -- Literals -> Keyword.Constant
+true
+false
+null
+
+// -- Pseudo-variables -> Name.Builtin.Pseudo
+this
+super
+
+// -- Control flow -> Keyword
+break
+continue
+do
+else
+foreach
+if
+match
+repeat
+return
+while
+
+// -- Activity and scheduling -> Keyword
+activity
+concat
+eventually
+forall
+join_branch
+join_first
+join_none
+join_select
+overlap
+parallel
+replicate
+schedule
+select
+sequence
+yield
+
+// -- Constraints -> Keyword
+constraint
+default
+disable
+dist
+iff
+in
+unique
+with
+
+// -- Coverage -> Keyword
+bins
+cover
+coverpoint
+cross
+ignore_bins
+illegal_bins
+
+// -- Flow objects and resources -> Keyword
+bind
+inout
+input
+lock
+output
+pool
+share
+
+// -- Exec -> Keyword
+exec
+body
+declaration
+file
+header
+init_down
+init_up
+post_solve
+pre_body
+pre_solve
+run_end
+run_start
+
+// -- Functions -> Keyword
+function
+
+// -- Other -> Keyword
+as
+randomize
+
+// -- Conditional compilation -> Comment.Preproc, in the two-word form only
+compile if
+compile has
+compile assert
+
+// -- ...and bare, where they are ordinary identifiers
+compile
+has
+assert

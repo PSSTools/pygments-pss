@@ -1,0 +1,106 @@
+'package'                Token.Keyword.Declaration
+' '                      Token.Text
+'p'                      Token.Name.Namespace
+';'                      Token.Punctuation
+'\n'                     Token.Text
+'component'              Token.Keyword.Declaration
+' '                      Token.Text
+'c'                      Token.Name.Class
+' '                      Token.Text
+'{'                      Token.Punctuation
+'}'                      Token.Punctuation
+'\n'                     Token.Text
+'struct'                 Token.Keyword.Declaration
+' '                      Token.Text
+'s'                      Token.Name.Class
+' '                      Token.Text
+'{'                      Token.Punctuation
+'}'                      Token.Punctuation
+'\n'                     Token.Text
+'buffer'                 Token.Keyword.Declaration
+' '                      Token.Text
+'b'                      Token.Name.Class
+' '                      Token.Text
+'{'                      Token.Punctuation
+'}'                      Token.Punctuation
+'\n'                     Token.Text
+'action'                 Token.Keyword.Declaration
+' '                      Token.Text
+'a'                      Token.Name.Class
+' '                      Token.Text
+'{'                      Token.Punctuation
+'}'                      Token.Punctuation
+'\n'                     Token.Text
+'monitor'                Token.Keyword.Declaration
+' '                      Token.Text
+'m'                      Token.Name.Class
+' '                      Token.Text
+'{'                      Token.Punctuation
+'}'                      Token.Punctuation
+'\n'                     Token.Text
+'covergroup'             Token.Keyword.Declaration
+' '                      Token.Text
+'cg'                     Token.Name.Class
+' '                      Token.Text
+'{'                      Token.Punctuation
+'}'                      Token.Punctuation
+'\n'                     Token.Text
+'class'                  Token.Keyword.Declaration
+' '                      Token.Text
+'k'                      Token.Name.Class
+' '                      Token.Text
+'{'                      Token.Punctuation
+'}'                      Token.Punctuation
+'\n'                     Token.Text
+'annotation'             Token.Keyword.Declaration
+' '                      Token.Text
+'an'                     Token.Name.Class
+' '                      Token.Text
+'{'                      Token.Punctuation
+'}'                      Token.Punctuation
+'\n'                     Token.Text
+'extend'                 Token.Keyword.Declaration
+' '                      Token.Text
+'action'                 Token.Keyword.Declaration
+' '                      Token.Text
+'a'                      Token.Name.Class
+' '                      Token.Text
+'{'                      Token.Punctuation
+'}'                      Token.Punctuation
+'\n'                     Token.Text
+'typedef'                Token.Keyword.Declaration
+' '                      Token.Text
+'bit'                    Token.Keyword.Type
+'['                      Token.Punctuation
+'3'                      Token.Literal.Number.Integer
+':'                      Token.Operator
+'0'                      Token.Literal.Number.Integer
+']'                      Token.Punctuation
+' '                      Token.Text
+'nibble_t'               Token.Name
+';'                      Token.Punctuation
+'\n'                     Token.Text
+'function'               Token.Keyword
+' '                      Token.Text
+'int'                    Token.Keyword.Type
+' '                      Token.Text
+'add'                    Token.Name.Function
+'('                      Token.Punctuation
+'int'                    Token.Keyword.Type
+' '                      Token.Text
+'x'                      Token.Name
+')'                      Token.Punctuation
+';'                      Token.Punctuation
+'\n'                     Token.Text
+'exec'                   Token.Keyword
+' '                      Token.Text
+'body'                   Token.Keyword
+' '                      Token.Text
+'{'                      Token.Punctuation
+'}'                      Token.Punctuation
+'\n'                     Token.Text
+'activity'               Token.Keyword
+' '                      Token.Text
+'{'                      Token.Punctuation
+'}'                      Token.Punctuation
+'\n'                     Token.Text

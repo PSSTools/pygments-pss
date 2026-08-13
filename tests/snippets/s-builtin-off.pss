@@ -1,0 +1,8 @@
+std_pkg::print("hello");
+urandom_range(0, 7);
+addr_reg_pkg::addr_claim_s claim;
+executor_pkg::executor_c e;
+float64 x = sqrt(2.0);
+// A user-defined name that shadows a builtin: an accepted false positive.
+function void print(string s);
+print("mine");

@@ -1,0 +1,35 @@
+'"'                      Token.Literal.String.Double
+'legal: '                Token.Literal.String.Double
+"\\'"                    Token.Literal.String.Escape
+' '                      Token.Literal.String.Double
+'\\"'                    Token.Literal.String.Escape
+' '                      Token.Literal.String.Double
+'\\?'                    Token.Literal.String.Escape
+' '                      Token.Literal.String.Double
+'\\\\'                   Token.Literal.String.Escape
+' '                      Token.Literal.String.Double
+'\\a'                    Token.Literal.String.Escape
+' '                      Token.Literal.String.Double
+'\\b'                    Token.Literal.String.Escape
+' '                      Token.Literal.String.Double
+'\\f'                    Token.Literal.String.Escape
+' '                      Token.Literal.String.Double
+'\\n'                    Token.Literal.String.Escape
+' '                      Token.Literal.String.Double
+'\\r'                    Token.Literal.String.Escape
+' '                      Token.Literal.String.Double
+'\\t'                    Token.Literal.String.Escape
+' '                      Token.Literal.String.Double
+'\\v'                    Token.Literal.String.Escape
+' '                      Token.Literal.String.Double
+'\\101'                  Token.Literal.String.Escape
+'"'                      Token.Literal.String.Double
+'\n'                     Token.Text
+'"'                      Token.Literal.String.Double
+'illegal: '              Token.Literal.String.Double
+'\\q'                    Token.Error
+'"'                      Token.Literal.String.Double
+'\n'                     Token.Text
+'"'                      Token.Literal.String.Double
+'unterminated'           Token.Literal.String.Double
+'\n'                     Token.Error

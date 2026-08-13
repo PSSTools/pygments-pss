@@ -1,0 +1,24 @@
+"4'sd12"                 Token.Literal.Number.Integer
+' '                      Token.Text
+"'hFF"                   Token.Literal.Number.Hex
+' '                      Token.Text
+"8'b1010_1010"           Token.Literal.Number.Bin
+' '                      Token.Text
+"3'o7"                   Token.Literal.Number.Oct
+' '                      Token.Text
+'0xDEAD_BEEF'            Token.Literal.Number.Hex
+' '                      Token.Text
+'0b1101'                 Token.Literal.Number.Bin
+' '                      Token.Text
+'0755'                   Token.Literal.Number.Oct
+' '                      Token.Text
+'0'                      Token.Literal.Number.Integer
+' '                      Token.Text
+'42'                     Token.Literal.Number.Integer
+' '                      Token.Text
+'20.14'                  Token.Literal.Number.Float
+' '                      Token.Text
+'2e6'                    Token.Literal.Number.Float
+' '                      Token.Text
+'1e-9'                   Token.Literal.Number.Float
+'\n'                     Token.Text

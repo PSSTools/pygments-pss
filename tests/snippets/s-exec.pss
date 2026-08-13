@@ -1,0 +1,14 @@
+exec pre_solve {}
+exec post_solve {}
+exec pre_body {}
+exec body {}
+exec header {}
+exec declaration {}
+exec run_start {}
+exec run_end {}
+exec init_down {}
+exec init_up {}
+exec body C = """printf("hi");""";
+exec body CPP = """cout << 1;""";
+exec header SV = """import uvm_pkg::*;""";
+exec file "out.txt" = """content""";

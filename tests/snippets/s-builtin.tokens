@@ -1,0 +1,67 @@
+'std_pkg'                Token.Name.Builtin
+'::'                     Token.Operator
+'print'                  Token.Name.Builtin
+'('                      Token.Punctuation
+'"'                      Token.Literal.String.Double
+'hello'                  Token.Literal.String.Double
+'"'                      Token.Literal.String.Double
+')'                      Token.Punctuation
+';'                      Token.Punctuation
+'\n'                     Token.Text
+'urandom_range'          Token.Name.Builtin
+'('                      Token.Punctuation
+'0'                      Token.Literal.Number.Integer
+','                      Token.Punctuation
+' '                      Token.Text
+'7'                      Token.Literal.Number.Integer
+')'                      Token.Punctuation
+';'                      Token.Punctuation
+'\n'                     Token.Text
+'addr_reg_pkg'           Token.Name.Builtin
+'::'                     Token.Operator
+'addr_claim_s'           Token.Name.Builtin
+' '                      Token.Text
+'claim'                  Token.Name
+';'                      Token.Punctuation
+'\n'                     Token.Text
+'executor_pkg'           Token.Name.Builtin
+'::'                     Token.Operator
+'executor_c'             Token.Name.Builtin
+' '                      Token.Text
+'e'                      Token.Name
+';'                      Token.Punctuation
+'\n'                     Token.Text
+'float64'                Token.Keyword.Type
+' '                      Token.Text
+'x'                      Token.Name
+' '                      Token.Text
+'='                      Token.Operator
+' '                      Token.Text
+'sqrt'                   Token.Name.Builtin
+'('                      Token.Punctuation
+'2.0'                    Token.Literal.Number.Float
+')'                      Token.Punctuation
+';'                      Token.Punctuation
+'\n'                     Token.Text
+'// A user-defined name that shadows a builtin: an accepted false positive.' Token.Comment.Single
+'\n'                     Token.Text
+'function'               Token.Keyword
+' '                      Token.Text
+'void'                   Token.Keyword.Type
+' '                      Token.Text
+'print'                  Token.Name.Builtin
+'('                      Token.Punctuation
+'string'                 Token.Keyword.Type
+' '                      Token.Text
+'s'                      Token.Name
+')'                      Token.Punctuation
+';'                      Token.Punctuation
+'\n'                     Token.Text
+'print'                  Token.Name.Builtin
+'('                      Token.Punctuation
+'"'                      Token.Literal.String.Double
+'mine'                   Token.Literal.String.Double
+'"'                      Token.Literal.String.Double
+')'                      Token.Punctuation
+';'                      Token.Punctuation
+'\n'                     Token.Text

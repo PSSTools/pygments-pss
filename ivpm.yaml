@@ -1,0 +1,32 @@
+package:
+  name: pygments-pss
+
+  dep-sets:
+  - name: default
+    deps:
+    - name: pygments
+      src: pypi
+    - name: pytest
+      src: pypi
+
+  - name: default-dev
+    deps:
+    - name: pygments
+      src: pypi
+    - name: pytest
+      src: pypi
+    # Documentation build (docs/ dogfoods the lexer, so a docs build is a
+    # real regression signal -- plan section 4).
+    - name: sphinx
+      src: pypi
+    - name: myst-parser
+      src: pypi
+    - name: furo
+      src: pypi
+    # Grammar source for scripts/gen_keywords.py (DESIGN.md section 5).
+    # Development-only: _keywords.py is generated and checked in, so a
+    # released wheel never needs pssparser. Fetched as source, not built --
+    # only src/PSSLexer.g4 is read.
+    - name: pssparser
+      url: https://git.dvkit.org/psstools/pssparser.git
+      type: raw
