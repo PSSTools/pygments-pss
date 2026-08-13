@@ -347,8 +347,23 @@ omits. This is the phase that produces a lexer worth installing.
   all, rather than a failing one. `PYPI_API_TOKEN` was never the problem: it is an
   **org** secret on `psstools`, inherited by this repo.
 
-  A tag push does not replay retroactively, so `v0.1.0` had to be deleted and re-pushed
-  once Actions was on.
+  A tag push does not replay retroactively, so `v0.1.0` was deleted and re-pushed
+  (`6490c53` → `d2fc566`) once Actions was on. **That run did not publish either:** 55
+  further minutes of polling, still 404.
+
+  So the cause is *not* Actions being off alone. Everything checkable from a working
+  copy is now exhausted and checks out — the workflow parses, `runs-on` and the
+  container image are identical to `sphinx-pss`'s working workflow, the tag matches
+  `BASE`, the vocabulary is in sync with upstream, and the org secret exists. What is
+  left needs the run log:
+  - **Is a runner actually picking the job up?** A runner whose labels do not include
+    `ubuntu-latest`, or which cannot pull `dvkit/pssparser-ci:manylinux_2_28-x86_64`,
+    produces a queued-forever job that looks identical to "no run" from outside.
+  - **Or the `test` job is failing** at a step whose output nobody has read yet.
+
+  **Stop re-tagging blind.** Two release attempts have each cost an hour of wall clock
+  and produced one bit of information. The next step is the run log or a Forgejo token
+  with Actions read access, not a third tag.
 
   **Second blocker, caught pre-flight rather than by CI:** upstream `pssparser`'s
   `PSSLexer.g4` moved between generating `_keywords.py` and re-tagging (`5971ab4` →
