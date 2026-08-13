@@ -1,6 +1,6 @@
 # `pygments-pss` — Implementation, Test, and Documentation Plan
 
-**Status:** In progress — phases 0–2 complete (378 tests green)
+**Status:** In progress — phases 0–2 complete, 0.1.0 release prepared (378 tests green)
 **Companion to:** [`DESIGN.md`](../../DESIGN.md) (reviewed 2026-08-13, decisions D1–D6 accepted)
 **Tracking:** every task carries an ID (`P<phase>.<n>`) and a checkbox. Check the box
 only when its acceptance criterion is demonstrably met, not when the code is written.
@@ -37,7 +37,7 @@ and `pssparser` so the three repos feel like one stack.
 
 | Concern | Choice | Note |
 | --- | --- | --- |
-| Build backend | `setuptools>=68` | `DESIGN.md` §4.2 sketched `hatchling`; **`sphinx-pss` uses setuptools and there is no reason to differ.** Settled: §8 P-D1. |
+| Build backend | `setuptools>=77` | `DESIGN.md` §4.2 sketched `hatchling`; **`sphinx-pss` uses setuptools and there is no reason to differ.** Settled: §8 P-D1. Floor raised from 68 to 77 at release time — see §9. |
 | Layout | `src/` | Tests run against the installed package so the entry point is exercised. |
 | Python floor | 3.9 | Widest range `pssparser` builds for. `sphinx-pss` is 3.10+, but this package has no Sphinx dependency. |
 | Pygments floor | `>=2.14` | `DESIGN.md` §4.2. |
@@ -319,16 +319,39 @@ omits. This is the phase that produces a lexer worth installing.
 
 ### 2.4 Phase 4 — Release and migration
 
-- [ ] **P4.1 Enable the publish job.** Remove the `if: false` from P0.5; tag `v0.1.0`.
+- [ ] **P4.1 Enable the publish job.** ~~Remove the `if: false` from P0.5~~ (never
+  added — the job is tag-gated, so it is inert until a tag exists; see P-D6); tag
+  `v0.1.0`.
   *Accept:* `pip install pygments-pss` into a clean venv, then
   `pygmentize -l pss file.pss` — from PyPI, not the working tree.
+  **In progress.** Everything up to the tag is done and verified locally:
+  - `pygments-pss` is unregistered on PyPI, so the name is free.
+  - Wheel and sdist both pass `twine check`; the sdist rebuilds into a working wheel.
+  - The full suite (378 tests) passes against the **installed wheel** rather than the
+    working tree, on Pygments 2.20 *and* on the declared floor of 2.14. That is the
+    phase-4 "full suite on the PyPI artifact" criterion, met before publishing rather
+    than after.
+  - `main` is pushed, so CI gets its first run before a tag is involved.
+
+  **Blocked on two things only the repository owner can see:** whether the `test` job
+  went green on that push, and whether `PYPI_API_TOKEN` exists as a Forgejo *repo
+  secret* (the workflow fails loudly if not). The Forgejo API and web UI both require
+  authentication, so neither is observable from a working copy.
 - [ ] **P4.2 Migrate `sphinx-pss`** per `DESIGN.md` §9, including the changelog entries
   for the `mutable` / `numeric` / `pssparser`-extension behavior changes, and resolving
   the `app.add_lexer` discrepancy flagged there.
   *Accept:* `sphinx-pss` docs build clean under `-W` with its own `lexer.py` reduced to
   a re-export.
-- [ ] **P4.3 README.** Install, usage in Sphinx/MkDocs/`pygmentize`, options table,
-  deviations list (§12 D4), link to the docs site.
+- [x] **P4.3 README.** Install, usage in Sphinx/MkDocs/`pygmentize`, options table,
+  deviations list (§12 D4), ~~link to the docs site~~ (no docs site yet — D4.14).
+  **Done, and pulled forward out of order on purpose:** the README *is* the PyPI
+  project page, so a placeholder saying "expanded in phase 4" would be the first thing
+  every visitor read. It documents only the two options that exist and says plainly
+  that `dialect` and `target_lexers` are designed but not in this release.
+  The deviations list is longer than §12 D4 alone: it also carries the escaped-identifier
+  whitespace rule (P1.5), the builtin-shadowing false positive (P2.2), the `numeric`
+  reading (D1), the template-bracket consequence (P2.3) and the `typedef` name (P1.9).
+  When D4.10 lands it should be sourced from this list rather than written again.
 
 ### 2.5 Phase 5 — Optional upstreaming
 
@@ -560,7 +583,7 @@ satisfies, so a well-meaning reorder is caught in review rather than by a golden
 | **1** ✅ | P1.1–P1.11 | T2.1–T2.7, T3.1–T3.5, T4.1–T4.5, T4.7–T4.10, T6.4, T6.5, T7.1–T7.3 | *(deferred to phase 2)* | Corpus sweep green; goldens for §6.3 constraints 1–7 |
 | **2** ✅ | P2.1–P2.5 | T4.6, T4.11, T6.3, `test_analyse_text.py` | *(deferred to phase 3)* | 3.1 corpus files clean; `analyse_text` does not steal C files |
 | **3** | P3.1–P3.3 | T4.12, T6.1–T6.5 | D4.5 (complete) | D2 decision recorded with corpus evidence |
-| **4** | P4.1–P4.3 | full suite on the PyPI artifact | D4.6–D4.8, D4.11–D4.14 | `sphinx-pss` builds `-W` clean against the released wheel |
+| **4** ◐ | P4.1 (blocked on CI), P4.3 ✅ | full suite green on the built wheel, and on the 2.14 floor | D4.6–D4.8, D4.11–D4.14 | `sphinx-pss` builds `-W` clean against the released wheel |
 | **5** | P5.1 | — | — | not scheduled |
 
 ---
@@ -708,3 +731,39 @@ The documentation track (D4.2, D4.4, D4.5, D4.9, D4.10) is now the whole of what
 1 and 2 still owe. It moves to phase 3, where `DESIGN.md`'s corrections — `mutable`,
 §6.3 constraint 5, §6.8, and the §4.4/D6 CI description — are applied as part of the
 D4.2 move rather than as scattered edits to a reviewed document.
+
+### 2026-08-13 — 0.1.0 release preparation (P4.1, P4.3)
+
+Release decided as **phases 0–2 shipped as 0.1.0**, via the CI-on-tag path (P-D6),
+rather than holding for phase 3. The README states the two missing options explicitly.
+
+Three defects found by actually building the artifacts, none of which any test would
+have caught, because all three live outside the code:
+
+1. **The sdist shipped an unrunnable test suite.** setuptools' default sdist picked up
+   `tests/*.py` but not `tests/conftest.py`, `tests/corpus/` or `tests/snippets/`.
+   Shipping the *whole* tree is not the fix either: `test_vocabulary_sync.py` is marked
+   `upstream` and fails rather than skips without `PSSLexer.g4`, which an sdist
+   deliberately does not carry. Resolved with `MANIFEST.in` — the suite is a repository
+   artifact, and a release is verified in CI against the wheel.
+2. **The build floor was wrong for the license metadata.** `license = "Apache-2.0"` is
+   a PEP 639 expression only from setuptools 77; 68–76 read the identical line as free
+   text and emit `License:` instead of `License-Expression:`. The declared floor was 68,
+   so an sdist rebuild could produce different metadata from the released wheel. Raised
+   to 77. §1's conventions table should say 77.
+3. **The `Source` project URL was a dead link.** `git.dvkit.org` serves git clones, not
+   browsable pages — `pssparser`, `sphinx-pss`, `peakrdl-pss` and this repo all 404 over
+   HTTP. A released version's metadata can never be edited, so it would have been
+   permanently dead on the PyPI page. Dropped; `Homepage` (Accellera, verified 200)
+   stays. `DESIGN.md` §4.2 lists the Source URL and should note the condition for adding
+   it back: a public mirror.
+
+Also settled here: the **PSS LRM draft stays untracked**, matching `pssparser` and
+`sphinx-pss`, neither of which commits it. It is an unreleased Accellera draft and this
+repository is published. `DESIGN.md` §2 calls it "in-repo", which is true of a working
+copy but should not be read as "in the repository".
+
+**Remaining for P4.1:** confirm the `test` job is green on `main` and that
+`PYPI_API_TOKEN` is set as a Forgejo repo secret, then push `v0.1.0`. The tag is the
+only irreversible step; if the job fails, nothing uploads and the tag can be deleted and
+re-pushed.
