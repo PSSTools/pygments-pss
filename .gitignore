@@ -15,4 +15,10 @@ docs/_build/
 
 packages/
 
+# The PSS LRM working copy. Not tracked, matching pssparser and sphinx-pss:
+# it is an unreleased Accellera draft and this repository is published.
+# DESIGN.md cites it as an in-repo reference; keep your own copy alongside.
+PSS *.md
+
+
 

@@ -1,0 +1,20 @@
+# The sdist ships the package, not the workbench.
+#
+# setuptools' default sdist picks up every .py file it finds, which pulled in
+# tests/*.py but none of tests/conftest.py, tests/corpus/ or tests/snippets/ --
+# an unrunnable suite, which is worse than no suite. Shipping the *whole* tree
+# would not fix it either: tests/test_vocabulary_sync.py is marked `upstream`
+# and fails rather than skips when pssparser's PSSLexer.g4 is absent, and it is
+# absent in an sdist by design (the grammar is a development dependency; see
+# DESIGN.md section 4.4).
+#
+# So the test suite stays a repository artifact. Verification of a release
+# happens in CI against the built wheel, which is where the corpus and the
+# grammar both exist.
+prune tests
+prune scripts
+prune docs
+prune packages
+exclude cspell.json
+exclude ivpm.yaml
+exclude DESIGN.md
