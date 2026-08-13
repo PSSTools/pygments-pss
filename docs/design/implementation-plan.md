@@ -1,6 +1,6 @@
 # `pygments-pss` — Implementation, Test, and Documentation Plan
 
-**Status:** In progress — phases 0–2 complete, 0.1.0 release prepared (378 tests green)
+**Status:** In progress — phases 0–2 complete; **0.1.0 published to PyPI 2026-08-13** (378 tests green)
 **Companion to:** [`DESIGN.md`](../../DESIGN.md) (reviewed 2026-08-13, decisions D1–D6 accepted)
 **Tracking:** every task carries an ID (`P<phase>.<n>`) and a checkbox. Check the box
 only when its acceptance criterion is demonstrably met, not when the code is written.
@@ -319,98 +319,52 @@ omits. This is the phase that produces a lexer worth installing.
 
 ### 2.4 Phase 4 — Release and migration
 
-- [ ] **P4.1 Enable the publish job.** ~~Remove the `if: false` from P0.5~~ (never
+- [x] **P4.1 Enable the publish job.** ~~Remove the `if: false` from P0.5~~ (never
   added — the job is tag-gated, so it is inert until a tag exists; see P-D6); tag
   `v0.1.0`.
   *Accept:* `pip install pygments-pss` into a clean venv, then
   `pygmentize -l pss file.pss` — from PyPI, not the working tree.
-  **In progress.** Everything up to the tag is done and verified locally:
-  - `pygments-pss` is unregistered on PyPI, so the name is free.
-  - Wheel and sdist both pass `twine check`; the sdist rebuilds into a working wheel.
-  - The full suite (378 tests) passes against the **installed wheel** rather than the
-    working tree, on Pygments 2.20 *and* on the declared floor of 2.14. That is the
-    phase-4 "full suite on the PyPI artifact" criterion, met before publishing rather
-    than after.
-  - `main` is pushed, so CI gets its first run before a tag is involved.
+  **Met, 2026-08-13.** `pygments-pss 0.1.0` is on PyPI: universal wheel (21,907 B) plus
+  sdist (23,048 B), `Requires-Python >=3.9`, `License-Expression: Apache-2.0`, README
+  rendered as Markdown. Installed into a clean venv *from PyPI*, confirmed the import
+  resolves to `site-packages` and not the working tree, all four lookups
+  (`pss`, `portable-stimulus`, `*.pss`, `text/x-pss`) return `PSSLexer`, the `PssLexer`
+  compatibility alias is the same object, `pygmentize -l pss` highlights, and the full
+  378-test suite passes against the published artifact.
 
-  **Tag `v0.1.0` (`6490c53`) pushed 2026-08-13; nothing reached PyPI.** Seventy minutes
-  of polling `https://pypi.org/pypi/pygments-pss/json` returned 404 throughout, so the
-  `publish-pypi` job did not upload. Ruled out locally: the workflow is present at the
-  tagged commit and parses cleanly, with the right `needs: [test]` and `refs/tags/v`
-  gate, so this is not a malformed-file "silently zero runs" case. Everything else is
-  invisible from a working copy — the Forgejo API and web UI both require
-  authentication.
+  Released by CI run 88 on tag `df45b7b` → `f7f8e96`: `vocabulary` + 12 matrix legs
+  (cp39–cp314 × Pygments {2.14 floor, latest}) + `publish-pypi`, all green.
 
-  **Cause: Forgejo Actions was not enabled on the repository.** Confirmed by the owner
-  and since turned on. A workflow file existing does not mean anything consumes it, and
-  a repo created this session had Actions off — so the first tag push produced no run at
-  all, rather than a failing one. `PYPI_API_TOKEN` was never the problem: it is an
-  **org** secret on `psstools`, inherited by this repo.
+  **It took three tags. The two failures are the useful part:**
 
-  A tag push does not replay retroactively, so `v0.1.0` was deleted and re-pushed
-  (`6490c53` → `d2fc566`) once Actions was on. **That run did not publish either:** 55
-  further minutes of polling, still 404.
+  1. **Forgejo Actions was disabled on the repository.** The first tag produced no run
+     at all. Not observable from a working copy.
+  2. **`ivpm update` on a fresh checkout resolved the `default` dep-set**, which held
+     only `pygments` and `pytest`. `pssparser` was declared solely in `default-dev`, so
+     CI never fetched `PSSLexer.g4` and the drift guard failed for a reason unrelated to
+     the vocabulary.
 
-  So the cause is *not* Actions being off alone. Everything checkable from a working
-  copy is now exhausted and checks out — the workflow parses, `runs-on` and the
-  container image are identical to `sphinx-pss`'s working workflow, the tag matches
-  `BASE`, the vocabulary is in sync with upstream, and the org secret exists. What is
-  left needs the run log:
-  - **Is a runner actually picking the job up?** A runner whose labels do not include
-    `ubuntu-latest`, or which cannot pull `dvkit/pssparser-ci:manylinux_2_28-x86_64`,
-    produces a queued-forever job that looks identical to "no run" from outside.
-  - **Or the `test` job is failing** at a step whose output nobody has read yet.
+     **A working copy cannot reproduce this**, which is why it survived every local
+     check: once `ivpm update -d default-dev` has run, `packages/ivpm.json` remembers
+     the choice and every later bare `ivpm update` keeps using it. This machine diverged
+     from a clean checkout on the first command of the project. Fixed in `ivpm.yaml`
+     (`default-dep-set: default-dev`, so a new contributor is right by default) *and* in
+     the workflow (`-d default-dev` explicit, so CI does not depend on a key in another
+     file), then verified by cloning the repo fresh and running the exact CI step: 2
+     packages became 17.
 
-  **Stop re-tagging blind.** Two release attempts have each cost an hour of wall clock
-  and produced one bit of information. The next step is the run log or a Forgejo token
-  with Actions read access, not a third tag.
+  **And the failure was invisible because of how the workflow was written**, not because
+  Forgejo hid anything. The original single job checked for the grammar with `test -f`,
+  which prints nothing when it fails, inside twelve sequential legs wrapped in collapsed
+  `::group::` blocks with `-q` on every pip. Restructuring into `vocabulary` / `test`
+  (6×2 job matrix, `fail-fast: false`) / `publish-pypi` made the next run state its own
+  cause in one line — a passing matrix leg next to a failing `vocabulary` job.
 
-  **Second blocker, caught pre-flight rather than by CI:** upstream `pssparser`'s
-  `PSSLexer.g4` moved between generating `_keywords.py` and re-tagging (`5971ab4` →
-  `c5d699a`), which would have failed T7.1/T7.2 and taken the `test` job red before
-  `publish-pypi` could run. This is the drift guard working exactly as `DESIGN.md` §5
-  intends — and worth noting that it was *cheaper* to check locally
-  (`git -C packages/pssparser fetch` + regenerate) than to spend a CI cycle finding out.
-  Regenerated; the change is **provenance only** — the removed token, `TOK_COMMENT_AT:
-  '//@'`, is not identifier-shaped, so the generator never collected it and all 106
-  keywords are byte-identical. No lexer behaviour changed.
+  **Lesson worth carrying to P4.2 and beyond:** a green suite on a developer's machine
+  says nothing about a clean checkout when a tool caches resolution state outside the
+  repository. The cheap guard is to clone into a temporary directory and run the CI
+  steps there — it found this in one command, after two hours of blind re-tagging.
 
-  Nothing is uploaded, so the tag can be deleted and re-pushed once the cause is fixed;
-  no version number has been burnt.
-
-  **Workflow restructured (2026-08-13) so the next run names its own cause.** The owner
-  reports the job is *failing*, not queued — so a runner does pick it up, and the
-  original single-job design is why the failure is illegible: twelve sequential legs
-  inside collapsed `::group::` blocks, `-q` on every pip, and a single pass/fail bit
-  emitted at the very end, far from whatever actually broke. Now three jobs:
-
-  | Job | Container | Fails when |
-  | --- | --- | --- |
-  | `vocabulary` | none | an internal identifier is committed, or `_keywords.py` drifts from the grammar |
-  | `test` | pssparser CI image | the suite fails — as a 6×2 job matrix, `fail-fast: false`, so the red leg names its own interpreter and Pygments version |
-  | `publish-pypi` | none | the release itself |
-
-  Three consequences beyond legibility:
-  - **The release path no longer needs the container.** This is a pure-Python package;
-    the manylinux image exists only to supply six interpreters to the matrix, and the
-    publish job has no business depending on it being pullable. (Worth knowing: the
-    image is **not publicly pullable** — `docker pull` from this machine is denied — so
-    it could not be reproduced locally either.)
-  - **The matrix no longer runs `ivpm update`.** It never needed the grammar: the drift
-    guard is the `upstream`-marked slice, which now runs once in `vocabulary`, and the
-    matrix runs `-m "not upstream"`. 6 + 372 = 378, verified as an exact partition.
-  - **Each leg pre-checks its interpreter exists**, and lists `/opt/python` if not — a
-    missing image entry otherwise surfaces as a bare "No such file or directory".
-
-  > **Original design note, now acted on: the matrix was too slow to be one job.** All 12
-  > legs (6 interpreters × 2 Pygments versions) run sequentially in `test`, each
-  > creating a venv and pip-installing Pygments, pytest and this package from source.
-  > That is plausibly 15–30 minutes before `publish-pypi` can even start, which made the
-  > first 25-minute poll inconclusive and is why it had to be run twice. The comment in
-  > `ci.yml` justifies the single job by "`ivpm update` fetches ~17 MB, pay it once" —
-  > true, but the grammar is only needed by the *last* step, not by the matrix. Splitting
-  > the matrix into a job matrix, and keeping the `ivpm update` and vocabulary check in a
-  > separate small job, would cut wall-clock to roughly one leg.
 - [ ] **P4.2 Migrate `sphinx-pss`** per `DESIGN.md` §9, including the changelog entries
   for the `mutable` / `numeric` / `pssparser`-extension behavior changes, and resolving
   the `app.add_lexer` discrepancy flagged there.
@@ -657,7 +611,7 @@ satisfies, so a well-meaning reorder is caught in review rather than by a golden
 | **1** ✅ | P1.1–P1.11 | T2.1–T2.7, T3.1–T3.5, T4.1–T4.5, T4.7–T4.10, T6.4, T6.5, T7.1–T7.3 | *(deferred to phase 2)* | Corpus sweep green; goldens for §6.3 constraints 1–7 |
 | **2** ✅ | P2.1–P2.5 | T4.6, T4.11, T6.3, `test_analyse_text.py` | *(deferred to phase 3)* | 3.1 corpus files clean; `analyse_text` does not steal C files |
 | **3** | P3.1–P3.3 | T4.12, T6.1–T6.5 | D4.5 (complete) | D2 decision recorded with corpus evidence |
-| **4** ◐ | P4.1 (blocked on CI), P4.3 ✅ | full suite green on the built wheel, and on the 2.14 floor | D4.6–D4.8, D4.11–D4.14 | `sphinx-pss` builds `-W` clean against the released wheel |
+| **4** ◐ | P4.1 ✅, P4.3 ✅, P4.2 outstanding | full suite green against the artifact published to PyPI | D4.6–D4.8, D4.11–D4.14 | `sphinx-pss` builds `-W` clean against the released wheel |
 | **5** | P5.1 | — | — | not scheduled |
 
 ---
@@ -841,3 +795,18 @@ copy but should not be read as "in the repository".
 `PYPI_API_TOKEN` is set as a Forgejo repo secret, then push `v0.1.0`. The tag is the
 only irreversible step; if the job fails, nothing uploads and the tag can be deleted and
 re-pushed.
+
+### 2026-08-13 — 0.1.0 published
+
+`pygments-pss 0.1.0` is on PyPI, released by CI (run 88) rather than by hand, which was
+the point of P-D6. Acceptance verified against the published artifact, not the build
+directory. Details and the two failed attempts are recorded against P4.1.
+
+Two follow-ups this left behind, neither blocking:
+
+- **`ci.yml` is now the reference for the stack's other repos.** The three-job split,
+  the container-free release path, and the `-d default-dev` fix all apply to
+  `sphinx-pss` as much as here.
+- **P4.2 (`sphinx-pss` migration) is unblocked**: there is now a real wheel on PyPI to
+  depend on, so its `pygments-pss` dependency need not be a source dep. Note that
+  `sphinx-pss`'s `ivpm.yaml` has already been pointed at this repo.
