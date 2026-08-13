@@ -31,8 +31,12 @@ test = ["pytest>=8.0"]
 docs = ["myst-parser", "furo", "sphinx>=7.0"]
 
 [project.urls]
+# DESIGN.md section 4.2 also lists a Source URL. Dropped: git.dvkit.org serves
+# git clones, not browsable repository pages -- every psstools repo 404s over
+# HTTP -- and a released version's metadata can never be edited, so a dead
+# link here would be permanent. Add it back when there is a public mirror to
+# point at. (pssparser publishes with no project URLs at all.)
 Homepage = "https://accellera.org/downloads/standards/portable-stimulus"
-Source = "https://git.dvkit.org/psstools/pygments-pss"
 
 # The entry-point *name* is cosmetic for lexers: Pygments loads the class and
 # reads its own aliases/filenames/mimetypes (DESIGN.md section 4.2).
