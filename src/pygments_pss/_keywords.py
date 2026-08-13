@@ -5,8 +5,8 @@ Regenerate with ``python scripts/gen_keywords.py``; verify with
 Provenance
 ----------
 Source grammar : pssparser ``src/PSSLexer.g4``
-  sha256       : ab28b7f5dd6bdc10ddb39ee1b7e9a4125c09044bc86035673d9f5ce0f36712d2
-  last commit  : 5971ab47346efe27a564b24841e83602227e220d 2026-08-01
+  sha256       : 1ce6bd763ebbcd44e7fb49a13a52c7e68c818a3f61e5917f3d6663d5e9674f3b
+  last commit  : c5d699ae9ef51ead64d20ae3c931b64b4ff00f39 2026-08-13
   keywords     : 106 reserved words read from the grammar
 Classification reviewed against : PSS 3.1 Draft 19 (2026-07-14)
 
@@ -15,8 +15,8 @@ unchanged grammar must produce a byte-identical file, or the drift-guard
 test (T7.1) reports a diff on every run.
 """
 
-GRAMMAR_SHA256 = 'ab28b7f5dd6bdc10ddb39ee1b7e9a4125c09044bc86035673d9f5ce0f36712d2'
-GRAMMAR_COMMIT = '5971ab47346efe27a564b24841e83602227e220d 2026-08-01'
+GRAMMAR_SHA256 = '1ce6bd763ebbcd44e7fb49a13a52c7e68c818a3f61e5917f3d6663d5e9674f3b'
+GRAMMAR_COMMIT = 'c5d699ae9ef51ead64d20ae3c931b64b4ff00f39 2026-08-13'
 LRM_REVISION = 'PSS 3.1 Draft 19 (2026-07-14)'
 
 #: Type-declaring keywords -> Keyword.Declaration.

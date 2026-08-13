@@ -341,16 +341,24 @@ omits. This is the phase that produces a lexer worth installing.
   invisible from a working copy — the Forgejo API and web UI both require
   authentication.
 
-  Remaining candidates, in order:
-  1. **Forgejo Actions is not enabled on the repository, or no runner is available.**
-     Most likely for a repo created this session: a workflow file existing does not mean
-     anything consumes it, and the runner also needs the `dvkit/pssparser-ci` image.
-  2. **`PYPI_API_TOKEN` is not set as a repo secret.** Secrets are per-repo, and this
-     repo is new. The job checks for it and fails with an explicit message.
-  3. **The `test` job went red.** Two first-run-specific candidates: the `git-url-map`
-     HTTPS auth for `git.dvkit.org` may not be configured for this runner, and
-     `test_vocabulary_sync.py` fails — by design, it is marked `upstream` — if upstream
-     `pssparser`'s `PSSLexer.g4` has moved since `_keywords.py` was generated.
+  **Cause: Forgejo Actions was not enabled on the repository.** Confirmed by the owner
+  and since turned on. A workflow file existing does not mean anything consumes it, and
+  a repo created this session had Actions off — so the first tag push produced no run at
+  all, rather than a failing one. `PYPI_API_TOKEN` was never the problem: it is an
+  **org** secret on `psstools`, inherited by this repo.
+
+  A tag push does not replay retroactively, so `v0.1.0` had to be deleted and re-pushed
+  once Actions was on.
+
+  **Second blocker, caught pre-flight rather than by CI:** upstream `pssparser`'s
+  `PSSLexer.g4` moved between generating `_keywords.py` and re-tagging (`5971ab4` →
+  `c5d699a`), which would have failed T7.1/T7.2 and taken the `test` job red before
+  `publish-pypi` could run. This is the drift guard working exactly as `DESIGN.md` §5
+  intends — and worth noting that it was *cheaper* to check locally
+  (`git -C packages/pssparser fetch` + regenerate) than to spend a CI cycle finding out.
+  Regenerated; the change is **provenance only** — the removed token, `TOK_COMMENT_AT:
+  '//@'`, is not identifier-shaped, so the generator never collected it and all 106
+  keywords are byte-identical. No lexer behaviour changed.
 
   Nothing is uploaded, so the tag can be deleted and re-pushed once the cause is fixed;
   no version number has been burnt.
