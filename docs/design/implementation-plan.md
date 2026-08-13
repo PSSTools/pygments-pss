@@ -333,10 +333,37 @@ omits. This is the phase that produces a lexer worth installing.
     than after.
   - `main` is pushed, so CI gets its first run before a tag is involved.
 
-  **Blocked on two things only the repository owner can see:** whether the `test` job
-  went green on that push, and whether `PYPI_API_TOKEN` exists as a Forgejo *repo
-  secret* (the workflow fails loudly if not). The Forgejo API and web UI both require
-  authentication, so neither is observable from a working copy.
+  **Tag `v0.1.0` (`6490c53`) pushed 2026-08-13; nothing reached PyPI.** Seventy minutes
+  of polling `https://pypi.org/pypi/pygments-pss/json` returned 404 throughout, so the
+  `publish-pypi` job did not upload. Ruled out locally: the workflow is present at the
+  tagged commit and parses cleanly, with the right `needs: [test]` and `refs/tags/v`
+  gate, so this is not a malformed-file "silently zero runs" case. Everything else is
+  invisible from a working copy — the Forgejo API and web UI both require
+  authentication.
+
+  Remaining candidates, in order:
+  1. **Forgejo Actions is not enabled on the repository, or no runner is available.**
+     Most likely for a repo created this session: a workflow file existing does not mean
+     anything consumes it, and the runner also needs the `dvkit/pssparser-ci` image.
+  2. **`PYPI_API_TOKEN` is not set as a repo secret.** Secrets are per-repo, and this
+     repo is new. The job checks for it and fails with an explicit message.
+  3. **The `test` job went red.** Two first-run-specific candidates: the `git-url-map`
+     HTTPS auth for `git.dvkit.org` may not be configured for this runner, and
+     `test_vocabulary_sync.py` fails — by design, it is marked `upstream` — if upstream
+     `pssparser`'s `PSSLexer.g4` has moved since `_keywords.py` was generated.
+
+  Nothing is uploaded, so the tag can be deleted and re-pushed once the cause is fixed;
+  no version number has been burnt.
+
+  > **Design note for whoever fixes this: the matrix is too slow to be one job.** All 12
+  > legs (6 interpreters × 2 Pygments versions) run sequentially in `test`, each
+  > creating a venv and pip-installing Pygments, pytest and this package from source.
+  > That is plausibly 15–30 minutes before `publish-pypi` can even start, which made the
+  > first 25-minute poll inconclusive and is why it had to be run twice. The comment in
+  > `ci.yml` justifies the single job by "`ivpm update` fetches ~17 MB, pay it once" —
+  > true, but the grammar is only needed by the *last* step, not by the matrix. Splitting
+  > the matrix into a job matrix, and keeping the `ivpm update` and vocabulary check in a
+  > separate small job, would cut wall-clock to roughly one leg.
 - [ ] **P4.2 Migrate `sphinx-pss`** per `DESIGN.md` §9, including the changelog entries
   for the `mutable` / `numeric` / `pssparser`-extension behavior changes, and resolving
   the `app.add_lexer` discrepancy flagged there.
