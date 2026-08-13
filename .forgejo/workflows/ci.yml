@@ -5,15 +5,23 @@
 #  1. No third-party actions. A bare `uses:` resolves against code.forgejo.org
 #     (Forgejo's DEFAULT_ACTIONS_URL), not github.com -- so `actions/checkout`
 #     and the `forgejo/*` actions are available and `actions/setup-python` is
-#     not. The interpreter matrix therefore comes from the pssparser CI
-#     container's /opt/python tree rather than from a setup action. That is the
-#     only reason this pure-Python package runs in a manylinux container.
+#     not.
 #  2. Dependencies resolve from git.dvkit.org, not github.com.
 #
-# The whole matrix runs in one job as a shell loop rather than as a job matrix:
-# each leg is a few seconds of pure-Python testing, while `ivpm update` fetches
-# ~17 MB (pssparser and its ANTLR/gtest deps, needed only for src/PSSLexer.g4).
-# Paying that once beats paying it twelve times.
+# Structure: three jobs, each of which fails for exactly one reason, so a red
+# run names its own cause.
+#
+#   vocabulary  the generated keyword set still matches pssparser's grammar
+#   test        the suite, across interpreters and Pygments versions
+#   publish     tag-gated release to PyPI
+#
+# The first version of this file put all twelve test legs in one sequential
+# job, sharing a single `ivpm update`. That was a mistake twice over: it put
+# 15-30 minutes in front of the publish job, and a failure in any leg surfaced
+# only as a pass/fail bit at the very end, inside a collapsed group. A job
+# matrix costs the `ivpm update` it was avoiding -- which the matrix does not
+# actually need, since the drift guard runs in its own job -- and in exchange a
+# failing leg is a red job with its own name and its own log.
 
 name: CI
 
@@ -23,16 +31,21 @@ on:
   - workflow_dispatch
 
 env:
-  PY: /opt/python/cp312-cp312/bin/python
   # Pygments floor from pyproject.toml. The floor leg is what catches
   # accidental use of a newer Pygments API (DESIGN.md section 8.5).
   PYGMENTS_FLOOR: "2.14.0"
 
 jobs:
-  test:
+  # --------------------------------------------------------------------
+  # Guard: no internal identifiers, and the vocabulary matches its source.
+  #
+  # Deliberately runs on a bare runner rather than in the pssparser CI
+  # container. Nothing here needs a manylinux image or six interpreters, and
+  # keeping it container-free means a container problem cannot disguise itself
+  # as a vocabulary problem.
+  # --------------------------------------------------------------------
+  vocabulary:
     runs-on: ubuntu-latest
-    container:
-      image: dvkit/pssparser-ci:manylinux_2_28-x86_64
 
     steps:
     - uses: actions/checkout@v4
@@ -49,6 +62,18 @@ jobs:
           exit 1
         fi
         echo "OK: no internal identifiers in tracked files"
+
+    - name: Report the environment
+      # Cheap, and it turns "the job failed and I cannot see why" into a fact.
+      run: |
+        echo "python: $(python3 -V 2>&1)  at $(command -v python3)"
+        echo "pwd:    $(pwd)"
+        echo "runner: ${RUNNER_OS:-unknown} ${RUNNER_ARCH:-}"
+
+    - name: Install ivpm
+      run: |
+        python3 -m pip install --upgrade pip
+        python3 -m pip install ivpm
 
     - name: Configure ivpm dependency resolution
       # ivpm.yaml names git.dvkit.org already, but pssparser's own dependencies
@@ -73,52 +98,84 @@ jobs:
       # packages/pssparser/src/PSSLexer.g4. The shipped wheel never needs it --
       # _keywords.py is generated and checked in.
       run: |
-        export IVPM_PYTHON=${PY}
-        ${IVPM_PYTHON} -m ivpm update -j 1 -a
-        test -f packages/pssparser/src/PSSLexer.g4
-
-    - name: Test across the interpreter and Pygments matrix
-      # Python 3.9-3.14 x Pygments {floor, latest} (DESIGN.md section 8.5).
-      run: |
-        set -e
-        fail=0
-        for py in cp39-cp39 cp310-cp310 cp311-cp311 cp312-cp312 cp313-cp313 cp314-cp314; do
-          for pyg in "==${PYGMENTS_FLOOR}" ""; do
-            label="${py} pygments${pyg:-@latest}"
-            echo "::group::${label}"
-            venv=/tmp/venv-${py}-${pyg//[!0-9]/}
-            /opt/python/${py}/bin/python -m venv ${venv}
-            ${venv}/bin/python -m pip install -q --upgrade pip
-            ${venv}/bin/python -m pip install -q ".[test]" "Pygments${pyg}"
-            if ${venv}/bin/python -m pytest -q --tb=short; then
-              echo "PASS ${label}"
-            else
-              echo "::error::FAIL ${label}"
-              fail=1
-            fi
-            echo "::endgroup::"
-          done
-        done
-        exit ${fail}
+        python3 -m ivpm update -j 1 -a
+        ls -l packages/pssparser/src/PSSLexer.g4
 
     - name: Check the generated vocabulary is in sync
-      # Redundant with tests/test_vocabulary_sync.py, but reports as itself:
-      # a pssparser keyword addition should read as "regenerate _keywords.py",
-      # not as an opaque assertion failure buried in the matrix output.
+      # Reports as itself: a pssparser keyword addition should read as
+      # "regenerate _keywords.py", not as an opaque assertion failure.
       run: |
-        . packages/python/bin/activate
-        python scripts/gen_keywords.py --check
+        python3 -m pip install "Pygments>=2.14" pytest
+        python3 -m pip install .
+        python3 scripts/gen_keywords.py --check
+        python3 -m pytest tests -q -m upstream --tb=short
 
-  publish-pypi:
-    # Releases only. A tag is the deliberate act; ordinary pushes to main
-    # produce dev-suffixed builds that must never reach PyPI, because a version
-    # number there can be yanked but never reused. (This replaces the plan's
-    # original push-to-main gate -- see implementation-plan section 8, P-D6.)
-    if: startsWith(github.ref, 'refs/tags/v')
-    needs: [test]
+  # --------------------------------------------------------------------
+  # The suite, one job per (interpreter, Pygments) pair.
+  #
+  # The container is here only because Forgejo cannot resolve
+  # actions/setup-python; /opt/python is where the interpreters come from.
+  # --------------------------------------------------------------------
+  test:
     runs-on: ubuntu-latest
     container:
       image: dvkit/pssparser-ci:manylinux_2_28-x86_64
+    strategy:
+      # Every leg reports independently: one broken interpreter should not
+      # hide the state of the other eleven.
+      fail-fast: false
+      matrix:
+        python: [cp39-cp39, cp310-cp310, cp311-cp311, cp312-cp312, cp313-cp313, cp314-cp314]
+        pygments: ["floor", "latest"]
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Check the interpreter exists
+      # A missing /opt/python entry otherwise fails as a bare "No such file or
+      # directory" from an unrelated-looking command.
+      run: |
+        P=/opt/python/${{ matrix.python }}/bin/python
+        if [ ! -x "$P" ]; then
+          echo "::error::${P} is not present in this image. Available:"
+          ls -1 /opt/python || true
+          exit 1
+        fi
+        echo "using $($P -V 2>&1) at $P"
+
+    - name: Run the suite
+      # The drift guard needs pssparser's grammar, which this job deliberately
+      # does not fetch; it runs once in the `vocabulary` job instead. Hence
+      # `-m "not upstream"`.
+      #
+      # No `-q` on pip and no `::group::`: when this fails, the log is the only
+      # thing anyone has to work with.
+      run: |
+        set -eu
+        P=/opt/python/${{ matrix.python }}/bin/python
+        if [ "${{ matrix.pygments }}" = "floor" ]; then
+          PYG="Pygments==${PYGMENTS_FLOOR}"
+        else
+          PYG="Pygments"
+        fi
+        echo "installing ${PYG}"
+        $P -m venv /tmp/venv
+        /tmp/venv/bin/python -m pip install --upgrade pip
+        /tmp/venv/bin/python -m pip install ".[test]" "${PYG}"
+        /tmp/venv/bin/python -c "import pygments; print('pygments', pygments.__version__)"
+        /tmp/venv/bin/python -m pytest tests -m "not upstream" -q --tb=short
+
+  # --------------------------------------------------------------------
+  # Release. Tag-gated: a version number on PyPI can be yanked but never
+  # reused, so an ordinary push must not be able to reach this.
+  #
+  # Container-free -- this package is pure Python, so the release path has no
+  # business depending on a manylinux image being pullable.
+  # --------------------------------------------------------------------
+  publish-pypi:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [vocabulary, test]
+    runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v4
@@ -137,16 +194,18 @@ jobs:
       # Pure Python: one universal wheel plus an sdist, no per-interpreter
       # matrix and no auditwheel repair (DESIGN.md section 4.4).
       run: |
-        ${PY} -m pip install -q build twine
-        ${PY} -m build
+        python3 -m pip install --upgrade pip
+        python3 -m pip install build twine
+        python3 -m build
         ls -l dist/
+        python3 -m twine check dist/*
 
     - name: Install the built wheel into a clean venv and smoke-test it
       # The entry point is packaging metadata; only an install from the built
       # artifact proves it survived the build.
       run: |
-        /opt/python/cp312-cp312/bin/python -m venv /tmp/relcheck
-        /tmp/relcheck/bin/python -m pip install -q dist/*.whl
+        python3 -m venv /tmp/relcheck
+        /tmp/relcheck/bin/python -m pip install dist/*.whl
         echo 'component pss_top { action entry {} }' > /tmp/smoke.pss
         /tmp/relcheck/bin/python -m pygments -l pss /tmp/smoke.pss
         /tmp/relcheck/bin/python -c "from pygments.lexers import get_lexer_by_name; print(get_lexer_by_name('pss'))"
@@ -159,8 +218,7 @@ jobs:
         TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
       run: |
         if [ -z "$TWINE_PASSWORD" ]; then
-          echo "::error::PYPI_API_TOKEN is not set for this repository"
+          echo "::error::PYPI_API_TOKEN is not visible to this job"
           exit 1
         fi
-        ${PY} -m twine check dist/*
-        ${PY} -m twine upload --non-interactive --skip-existing dist/*
+        python3 -m twine upload --non-interactive --skip-existing dist/*

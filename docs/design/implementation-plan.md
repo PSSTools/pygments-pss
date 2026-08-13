@@ -378,7 +378,31 @@ omits. This is the phase that produces a lexer worth installing.
   Nothing is uploaded, so the tag can be deleted and re-pushed once the cause is fixed;
   no version number has been burnt.
 
-  > **Design note for whoever fixes this: the matrix is too slow to be one job.** All 12
+  **Workflow restructured (2026-08-13) so the next run names its own cause.** The owner
+  reports the job is *failing*, not queued — so a runner does pick it up, and the
+  original single-job design is why the failure is illegible: twelve sequential legs
+  inside collapsed `::group::` blocks, `-q` on every pip, and a single pass/fail bit
+  emitted at the very end, far from whatever actually broke. Now three jobs:
+
+  | Job | Container | Fails when |
+  | --- | --- | --- |
+  | `vocabulary` | none | an internal identifier is committed, or `_keywords.py` drifts from the grammar |
+  | `test` | pssparser CI image | the suite fails — as a 6×2 job matrix, `fail-fast: false`, so the red leg names its own interpreter and Pygments version |
+  | `publish-pypi` | none | the release itself |
+
+  Three consequences beyond legibility:
+  - **The release path no longer needs the container.** This is a pure-Python package;
+    the manylinux image exists only to supply six interpreters to the matrix, and the
+    publish job has no business depending on it being pullable. (Worth knowing: the
+    image is **not publicly pullable** — `docker pull` from this machine is denied — so
+    it could not be reproduced locally either.)
+  - **The matrix no longer runs `ivpm update`.** It never needed the grammar: the drift
+    guard is the `upstream`-marked slice, which now runs once in `vocabulary`, and the
+    matrix runs `-m "not upstream"`. 6 + 372 = 378, verified as an exact partition.
+  - **Each leg pre-checks its interpreter exists**, and lists `/opt/python` if not — a
+    missing image entry otherwise surfaces as a bare "No such file or directory".
+
+  > **Original design note, now acted on: the matrix was too slow to be one job.** All 12
   > legs (6 interpreters × 2 Pygments versions) run sequentially in `test`, each
   > creating a venv and pip-installing Pygments, pytest and this package from source.
   > That is plausibly 15–30 minutes before `publish-pypi` can even start, which made the
