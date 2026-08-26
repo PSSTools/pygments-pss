@@ -156,6 +156,34 @@ jobs:
         fi
         echo "using $($P -V 2>&1) at $P"
 
+    - name: Fetch the corpus
+      # The suite's primary signal is a sweep over pss-corpus, which used to be
+      # vendored at tests/corpus/ and is now a dependency (DESIGN.md 8.1). It is
+      # a hard requirement: the suite fails rather than skips when it is absent,
+      # because a sweep that finds no files and passes reports success in
+      # exactly the case it exists to catch. So this step is load-bearing --
+      # without it, all twelve legs go red at collection.
+      #
+      # A direct shallow clone rather than `ivpm update`, which is what this job
+      # is structured to avoid: ivpm would also resolve pssparser and build a
+      # dependency graph, for test data that has nothing to build. The cost of
+      # naming the URL in a second place is that ivpm.yaml and this file can
+      # drift; the alternative cost is minutes on every one of twelve legs.
+      #
+      # Not `--depth 1`: the transport in front of git.dvkit.org can fall back
+      # to dumb http, which has no shallow capability and fails outright rather
+      # than degrading to a full clone. The whole history is 324K, so the flag
+      # was buying nothing worth a transport dependency.
+      run: |
+        set -eu
+        git clone https://git.dvkit.org/psstools/pss-corpus.git packages/pss-corpus
+        n=$(find packages/pss-corpus/curated -name '*.pss' | wc -l)
+        echo "corpus: $n .pss files"
+        if [ "$n" -lt 50 ]; then
+          echo "::error::corpus resolved but looks wrong ($n files, expected 50+)"
+          exit 1
+        fi
+
     - name: Run the suite
       # The drift guard needs pssparser's grammar, which this job deliberately
       # does not fetch; it runs once in the `vocabulary` job instead. Hence
