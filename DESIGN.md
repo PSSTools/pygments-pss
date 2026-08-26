@@ -184,8 +184,7 @@ pygments-pss/
 ├── scripts/
 │   └── gen_keywords.py           regenerates _keywords.py (§5)
 └── tests/
-    ├── conftest.py
-    ├── corpus/                   *.pss files (§8.1)
+    ├── conftest.py               includes corpus discovery (§8.1)
     ├── snippets/                 *.pss + *.txt golden token dumps (§8.2)
     ├── test_no_error_tokens.py
     ├── test_snippets.py
@@ -492,7 +491,7 @@ confidence, and over-claiming steals files from other lexers.
 
 ### 8.1 Corpus test — no `Token.Error`
 
-The highest value-per-line test available. Lex every file in `tests/corpus/` and assert
+The highest value-per-line test available. Lex every file in the corpus and assert
 zero `Token.Error` and no token longer than N characters (catches runaway states, which
 produce *valid* tokens and so slip past the error check).
 
@@ -509,6 +508,27 @@ Corpus sources, all locally available:
 
 Corpus files get vendored into this repo (they are small) rather than referenced by
 path, so tests run standalone.
+
+> **Superseded 2026-08-26 — the corpus moved to `pss-corpus`.** Kept rather than
+> deleted, because the reasoning above was correct when written and it is worth
+> knowing why it stopped being correct.
+>
+> "Vendored so tests run standalone" traded one cost for another: it bought a
+> suite with no external dependency, and it paid in drift. Three projects ended
+> up wanting the same files — this lexer, `pssfmt`, and `pssparser` — and each
+> would have kept its own copy, diverging silently, since nothing fails when two
+> corpora disagree.
+>
+> What settled it was not the drift argument but an accident. `pssfmt` pointed a
+> *parser* at this corpus, which had only ever been lexed, and immediately found
+> five `pssparser` gaps for valid PSS. A corpus built for one tool is worth more
+> to the others than to the one that built it — and vendoring is precisely what
+> stops them from getting at it. Making that a standing arrangement rather than
+> an accident is the point.
+>
+> The standalone property is genuinely lost: this suite now needs the
+> `pss-corpus` dependency, and fails rather than skips without it. That is the
+> price, paid deliberately. See `pss-corpus/PLAN.md`, Phase C3.
 
 ### 8.2 Snippet golden tests
 

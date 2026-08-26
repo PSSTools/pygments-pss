@@ -3,9 +3,10 @@
 **Hand-curated, not generated.** Annex C is normative but it is *prose-embedded
 code*: the package bodies are interleaved with explanatory text and examples, so
 a scraper picks up `and`, `shall` and `my_struct_s` alongside `urandom_range`.
-The extraction was done mechanically and then filtered by hand against
-``tests/corpus/stdlib/``, which carries a working implementation of the same
-four packages. Anything here that neither Annex C nor that implementation
+The extraction was done mechanically and then filtered by hand against the
+corpus's ``stdlib/`` bucket (``pss-corpus``, formerly ``tests/corpus/stdlib/``
+in this repo), which carries a working implementation of the same four
+packages. Anything here that neither Annex C nor that implementation
 declares is a bug.
 
 These are **library**, not language: ``Name.Builtin`` rather than

@@ -1,4 +1,0 @@
-component c {
-    string s = "this string is never closed;
-    int x = 1;
-}

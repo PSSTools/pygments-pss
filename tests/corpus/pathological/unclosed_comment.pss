@@ -1,4 +1,0 @@
-component c {
-    /* this block comment is never closed
-    int x = 1;
-}

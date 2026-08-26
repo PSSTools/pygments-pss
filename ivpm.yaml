@@ -35,6 +35,17 @@ package:
       src: pypi
     - name: furo
       src: pypi
+    # The shared .pss corpus (pss-corpus/PLAN.md). Test data: `type: raw`
+    # because there is nothing to build and nothing to install.
+    #
+    # This repo was the donor -- the corpus was vendored at tests/corpus/ until
+    # Phase C3 moved it out (DESIGN.md section 8.1 records why). It is a hard
+    # dependency of the suite now, not an optional one: the corpus sweep is the
+    # primary signal, and it fails rather than skips when the corpus is absent.
+    - name: pss-corpus
+      url: https://git.dvkit.org/psstools/pss-corpus.git
+      type: raw
+
     # Grammar source for scripts/gen_keywords.py (DESIGN.md section 5).
     # Development-only: _keywords.py is generated and checked in, so a
     # released wheel never needs pssparser. Fetched as source, not built --

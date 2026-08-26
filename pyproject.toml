@@ -56,6 +56,6 @@ pygments_pss = ["py.typed"]
 testpaths = ["tests"]
 markers = [
     "unit: pure token-stream assertions",
-    "corpus: sweeps over tests/corpus/; fast, and the primary signal -- not opt-in",
+    "corpus: sweeps over the pss-corpus dependency; fast, and the primary signal -- not opt-in",
     "upstream: asserts a pssparser grammar fact this package depends on; a failure, never a skip",
 ]

@@ -14,6 +14,9 @@ import pytest
 from pygments.token import Comment, Error, String
 
 from conftest import (
+    CORPUS,
+    FALLBACK_PATHOLOGICAL_DIRS,
+    PATHOLOGICAL_DIRS,
     _is_pathological,
     corpus_files,
     corpus_id,
@@ -37,6 +40,28 @@ CLEAN = [f for f in corpus_files() if not _is_pathological(f)]
 PATHOLOGICAL = [f for f in corpus_files() if _is_pathological(f)]
 IDS_CLEAN = [corpus_id(f) for f in CLEAN]
 IDS_PATH = [corpus_id(f) for f in PATHOLOGICAL]
+
+
+def test_the_corpus_is_the_shared_one():
+    # The corpus is a dependency now, not vendored here. If this repo ever
+    # grows a tests/corpus/ again, the sweep must not silently prefer it: two
+    # corpora with one stale is the exact drift the move was meant to remove.
+    assert CORPUS is not None, "no corpus; see conftest.corpus_files"
+    assert not (Path(__file__).parent / "corpus").exists(), (
+        "tests/corpus/ is back. The corpus lives in pss-corpus; delete this "
+        "copy rather than teaching the suite to choose between them.")
+    assert len(corpus_files()) >= 50, (
+        "%d files from %s -- too few to be the curated corpus"
+        % (len(corpus_files()), CORPUS))
+
+
+def test_the_manifest_agrees_with_the_fallback():
+    # Bucket policy has two sources: the corpus manifest, and the literal used
+    # when there is no manifest to read. Pin them together, or the fallback
+    # rots unnoticed and only bites the one configuration nobody runs.
+    assert PATHOLOGICAL_DIRS == FALLBACK_PATHOLOGICAL_DIRS, (
+        "manifest.toml says %s do not parse, the fallback says %s"
+        % (sorted(PATHOLOGICAL_DIRS), sorted(FALLBACK_PATHOLOGICAL_DIRS)))
 
 
 def _oversized(tokens):

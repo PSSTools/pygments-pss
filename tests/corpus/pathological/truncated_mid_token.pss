@@ -1,3 +1,0 @@
-component pss_top {
-    action entry {
-        rand bit[7:0] pay
