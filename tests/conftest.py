@@ -88,7 +88,20 @@ def _manifest() -> dict:
     for candidate in (CORPUS.parent, CORPUS):
         path = candidate / "manifest.toml"
         if path.is_file():
-            import tomllib
+            # tomllib is stdlib from 3.11; `tomli` is the same parser under its
+            # pre-stdlib name, and `[test]` pulls it in below 3.11.
+            #
+            # This import is reached at conftest IMPORT time -- PATHOLOGICAL_DIRS
+            # below calls _manifest() at module level -- so on 3.9 and 3.10 a
+            # bare `import tomllib` does not degrade to a skipped test, it takes
+            # the whole suite out at collection. It only became reachable once
+            # the corpus resolved in CI: with no corpus, _manifest() returns on
+            # the CORPUS is None path above and never gets here, which is why
+            # requires-python = ">=3.9" went so long without being contradicted.
+            try:
+                import tomllib
+            except ModuleNotFoundError:  # Python < 3.11
+                import tomli as tomllib
             return tomllib.loads(path.read_text(encoding="utf-8")).get(
                 "bucket", {})
     return {}

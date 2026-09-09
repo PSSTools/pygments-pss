@@ -27,7 +27,10 @@ dependencies = ["Pygments>=2.14"]
 dynamic = ["version"]
 
 [project.optional-dependencies]
-test = ["pytest>=8.0"]
+# tomli is the pre-stdlib name for tomllib, which arrived in 3.11. tests/
+# conftest.py reads the corpus manifest at import time, so below 3.11 this is
+# not optional -- without it the suite dies at collection rather than skipping.
+test = ["pytest>=8.0", 'tomli>=2.0; python_version < "3.11"']
 docs = ["myst-parser", "furo", "sphinx>=7.0"]
 
 [project.urls]
