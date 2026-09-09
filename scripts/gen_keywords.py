@@ -176,6 +176,11 @@ BUCKETS: Dict[str, Tuple[str, Tuple[str, ...]]] = {
             "dist",
             "iff",
             "in",
+            # A real 3.1 keyword, absent from Table 3 for the same reason
+            # `mutable` is -- the cell the PDF conversion destroyed. See
+            # clause 13.1.12, `soft_constraint_item` in Annex B.14, and the
+            # note on `TOK_SOFT` in PSSLexer.g4.
+            "soft",
             "unique",
             "with",
         ),

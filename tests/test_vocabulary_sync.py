@@ -136,6 +136,7 @@ def test_lrm_3_1_additions_are_present():
         "overlap",
         "pre_body",
         "replicate",
+        "soft",
         "symbol",
         "this",
         "yield",

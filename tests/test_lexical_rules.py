@@ -156,6 +156,17 @@ def test_keyword_prefixes_do_not_shadow_longer_keywords():
 def test_keyword_does_not_match_inside_an_identifier():
     assert only("integer_value") == (Name, "integer_value")
     assert only("my_action") == (Name, "my_action")
+    # `soft` is short and prefixes ordinary words; the trailing `\b` is what
+    # keeps it off them.
+    assert only("software_mode") == (Name, "software_mode")
+
+
+def test_soft_constraint_qualifier():
+    """LRM 13.1.12 -- `soft` is a constraint keyword, not an identifier."""
+    tokens = significant("constraint c { soft addr in [0..255]; }")
+    assert tokens[0] == (Keyword, "constraint")
+    assert tokens[3] == (Keyword, "soft")
+    assert tokens[4] == (Name, "addr")
 
 
 # ---------------------------------------------------------------- constraint 6

@@ -154,6 +154,7 @@ Diffing Table 3 against `PSSLexer.g4`:
 | `this` | present | absent | Treat as keyword. |
 | `from`, `init`, `option`, `pyimport`, `pyobj` | absent | present | `pssparser` extensions / legacy. Not standard. See §6.6. |
 | `mutable` | absent | absent | Present in the current `sphinx-pss` lexer. **Not a PSS keyword — drop it.** |
+| `soft` | **absent** | present | Real 3.1 keyword (`soft_constraint_item` in Annex B.14, clause 13.1.12). Table 3's cell is one of the ones the PDF conversion destroyed, as with `annotation`. Treat as keyword. |
 
 The table itself is also visibly damaged by the PDF→Markdown conversion (cells shifted
 across row boundaries), so it is *not* a trustworthy machine-readable source. Annex B
@@ -331,7 +332,7 @@ scrutinize, because it determines what the reader's eye picks out.
 | **Pseudo-variables** | `Name.Builtin.Pseudo` | `this super` |
 | **Control flow** | `Keyword` | `break continue do else foreach if match repeat return while` |
 | **Activity / scheduling** | `Keyword` | `activity concat eventually forall join_branch join_first join_none join_select overlap parallel replicate schedule select sequence yield` |
-| **Constraints** | `Keyword` | `constraint default disable dist forall if iff in unique with` |
+| **Constraints** | `Keyword` | `constraint default disable dist forall if iff in soft unique with` |
 | **Coverage** | `Keyword` | `bins cover coverpoint cross ignore_bins illegal_bins` |
 | **Flow objects / resources** | `Keyword` | `bind in inout input lock output pool share` |
 | **Exec** | `Keyword` | `exec body declaration file header init_down init_up post_solve pre_body pre_solve run_end run_start` |

@@ -5,9 +5,9 @@ Regenerate with ``python scripts/gen_keywords.py``; verify with
 Provenance
 ----------
 Source grammar : pssparser ``src/PSSLexer.g4``
-  sha256       : 1ce6bd763ebbcd44e7fb49a13a52c7e68c818a3f61e5917f3d6663d5e9674f3b
-  last commit  : c5d699ae9ef51ead64d20ae3c931b64b4ff00f39 2026-08-13
-  keywords     : 106 reserved words read from the grammar
+  sha256       : 815d3d4e5574cf4cd55cb13b5a9c9ab006d8fd6aed5423b424425565cb74e15e
+  last commit  : e52c0daf6e13bec9faa4a0ad172657f865bc8958 2026-09-02
+  keywords     : 107 reserved words read from the grammar
 Classification reviewed against : PSS 3.1 Draft 19 (2026-07-14)
 
 No generation timestamp is recorded on purpose: regenerating from an
@@ -15,8 +15,8 @@ unchanged grammar must produce a byte-identical file, or the drift-guard
 test (T7.1) reports a diff on every run.
 """
 
-GRAMMAR_SHA256 = '1ce6bd763ebbcd44e7fb49a13a52c7e68c818a3f61e5917f3d6663d5e9674f3b'
-GRAMMAR_COMMIT = 'c5d699ae9ef51ead64d20ae3c931b64b4ff00f39 2026-08-13'
+GRAMMAR_SHA256 = '815d3d4e5574cf4cd55cb13b5a9c9ab006d8fd6aed5423b424425565cb74e15e'
+GRAMMAR_COMMIT = 'e52c0daf6e13bec9faa4a0ad172657f865bc8958 2026-09-02'
 LRM_REVISION = 'PSS 3.1 Draft 19 (2026-07-14)'
 
 #: Type-declaring keywords -> Keyword.Declaration.
@@ -132,6 +132,7 @@ CONSTRAINTS = (
     "dist",
     "iff",
     "in",
+    "soft",
     "unique",
     "with",
 )

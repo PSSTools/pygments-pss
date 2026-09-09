@@ -192,6 +192,8 @@
 '\n'                     Token.Text
 'in'                     Token.Keyword
 '\n'                     Token.Text
+'soft'                   Token.Keyword
+'\n'                     Token.Text
 'unique'                 Token.Keyword
 '\n'                     Token.Text
 'with'                   Token.Keyword
